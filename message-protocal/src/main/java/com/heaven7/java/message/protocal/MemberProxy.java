@@ -3,6 +3,7 @@ package com.heaven7.java.message.protocal;
 public interface MemberProxy{
 
     byte TYPE_BYTE = 1;
+    byte TYPE_SHORT = 2;
     byte TYPE_INT = 3;
     byte TYPE_LONG = 4;
     byte TYPE_BOOLEAN = 5;
@@ -15,6 +16,7 @@ public interface MemberProxy{
     int getType();
 
     void setInt(Object obj, int value) throws IllegalAccessException;
+    void setShort(Object obj, short value) throws IllegalAccessException;
 
     void setByte(Object obj, byte value) throws IllegalAccessException;
 
@@ -32,6 +34,7 @@ public interface MemberProxy{
 
     byte getByte(Object obj) throws IllegalAccessException;
     int getInt(Object obj)  throws IllegalAccessException;
+    short getShort(Object obj)  throws IllegalAccessException;
     long getLong(Object obj)  throws IllegalAccessException;
     boolean getBoolean(Object obj)  throws IllegalAccessException;
     float getFloat(Object obj)  throws IllegalAccessException;

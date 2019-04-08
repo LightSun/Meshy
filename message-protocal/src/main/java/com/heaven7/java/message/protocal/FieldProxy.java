@@ -21,6 +21,9 @@ public class FieldProxy implements MemberProxy {
         if(field.getType() == byte.class){
             return TYPE_BYTE;
         }
+        else if(field.getType() == short.class){
+            return TYPE_SHORT;
+        }
         else if(field.getType() == int.class){
             return TYPE_INT;
         }
@@ -55,6 +58,12 @@ public class FieldProxy implements MemberProxy {
     public void setInt(Object obj, int value)throws IllegalAccessException {
         field.set(obj, value);
     }
+
+    @Override
+    public void setShort(Object obj, short value)throws IllegalAccessException  {
+        field.set(obj, value);
+    }
+
     @Override
     public void setByte(Object obj, byte value) throws IllegalAccessException {
         field.set(obj, value);
@@ -98,6 +107,11 @@ public class FieldProxy implements MemberProxy {
     @Override
     public int getInt(Object obj) throws IllegalAccessException  {
         return field.getInt(obj);
+    }
+
+    @Override
+    public short getShort(Object obj)throws IllegalAccessException   {
+        return field.getShort(obj);
     }
 
     @Override

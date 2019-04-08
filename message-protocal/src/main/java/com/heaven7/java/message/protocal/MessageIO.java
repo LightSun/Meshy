@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class Messages {
+public class MessageIO {
 
     private static final WeakHashMap<Class<?>, List<MemberProxy>> sCache;
 
@@ -75,6 +75,9 @@ public class Messages {
                     case MemberProxy.TYPE_BYTE:
                         proxy.setByte(obj, source.readByte());
                         break;
+                    case MemberProxy.TYPE_SHORT:
+                        proxy.setShort(obj, (short)source.readInt());
+                        break;
                     case MemberProxy.TYPE_INT:
                         proxy.setInt(obj, source.readInt());
                         break;
@@ -129,6 +132,9 @@ public class Messages {
                 switch (proxy.getType()){
                     case MemberProxy.TYPE_BYTE:
                         sink.writeByte(proxy.getByte(obj));
+                        break;
+                    case MemberProxy.TYPE_SHORT:
+                        sink.writeInt(proxy.getShort(obj));
                         break;
                     case MemberProxy.TYPE_INT:
                         sink.writeInt(proxy.getInt(obj));

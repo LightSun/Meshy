@@ -8,8 +8,16 @@ public class Message<T> {
     public static final int COMMON = 4;
 
     private int type;
-    private String fullName;
+    private String msg;
     private T entity;
+
+    public static <T> Message<T> create(int type, String str, T object){
+        Message<T> msg = new Message<>();
+        msg.setType(type);
+        msg.setMsg(str);
+        msg.setEntity(object);
+        return msg;
+    }
 
     public int getType() {
         return type;
@@ -19,11 +27,11 @@ public class Message<T> {
         this.type = type;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getMsg() {
+        return msg;
     }
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
     public T getEntity() {

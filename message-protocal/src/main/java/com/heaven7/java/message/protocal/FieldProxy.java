@@ -1,29 +1,132 @@
 package com.heaven7.java.message.protocal;
 
-public interface FieldProxy {
+import java.lang.reflect.Field;
 
-    byte TYPE_BYTE = 1;
-    byte TYPE_SHORT_INT = 2;
-    byte TYPE_INT = 3;
-    byte TYPE_LONG = 4;
-    byte TYPE_BOOLEANM = 5;
-    byte TYPE_FLOAT = 6;
-    byte TYPE_DOUBLE = 7;
-    byte TYPE_OBJECT = 8;
+/**
+ * @author heaven7
+ */
+public class FieldProxy implements MemberProxy {
 
-    int getType();
+    private final Field field;
+    private final int type;
+    private int priority;
 
-    void setValue(Object obj, int value);
+    public FieldProxy(Field field, MessageMember mm) {
+        this.field = field;
+        this.type = parseType(field);
+        this.priority = mm.value();
+    }
 
-    void setValue(Object obj, byte value);
+    private static int parseType(Field field) {
+        if(field.getType() == byte.class){
+            return TYPE_BYTE;
+        }
+        else if(field.getType() == int.class){
+            return TYPE_INT;
+        }
+        else if(field.getType() == long.class){
+            return TYPE_LONG;
+        }
+        else if(field.getType() == float.class){
+            return TYPE_FLOAT;
+        }
+        else if(field.getType() == double.class){
+            return TYPE_DOUBLE;
+        }
+        else if(field.getType() == boolean.class){
+            return TYPE_BOOLEAN;
+        }
+        else if(field.getType() == String.class){
+            return TYPE_STRING;
+        }
+        return TYPE_OBJECT;
+    }
 
-    void setValue(Object obj, long value);
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+    @Override
+    public int getType() {
+        return type;
+    }
 
-    void setValue(Object obj, boolean value);
+    @Override
+    public void setInt(Object obj, int value)throws IllegalAccessException {
+        field.set(obj, value);
+    }
+    @Override
+    public void setByte(Object obj, byte value) throws IllegalAccessException {
+        field.set(obj, value);
+    }
 
-    void setValue(Object obj, float value);
+    @Override
+    public void setLong(Object obj, long value) throws IllegalAccessException {
+        field.set(obj, value);
+    }
 
-    void setValue(Object obj, double value);
+    @Override
+    public void setBoolean(Object obj, boolean value)throws IllegalAccessException  {
+        field.set(obj, value);
+    }
 
-    void setValue(Object obj, String value);
+    @Override
+    public void setFloat(Object obj, float value) throws IllegalAccessException {
+        field.set(obj, value);
+    }
+
+    @Override
+    public void setDouble(Object obj, double value) throws IllegalAccessException {
+        field.set(obj, value);
+    }
+
+    @Override
+    public void setString(Object obj, String value)throws IllegalAccessException  {
+        field.set(obj, value);
+    }
+
+    @Override
+    public void setObject(Object obj, Object value) throws IllegalAccessException {
+        field.set(obj, value);
+    }
+
+    @Override
+    public byte getByte(Object obj) throws IllegalAccessException {
+        return field.getByte(obj);
+    }
+
+    @Override
+    public int getInt(Object obj) throws IllegalAccessException  {
+        return field.getInt(obj);
+    }
+
+    @Override
+    public long getLong(Object obj)throws IllegalAccessException   {
+        return field.getLong(obj);
+    }
+
+    @Override
+    public boolean getBoolean(Object obj)throws IllegalAccessException   {
+        return field.getBoolean(obj);
+    }
+
+    @Override
+    public float getFloat(Object obj)throws IllegalAccessException  {
+        return field.getFloat(obj);
+    }
+
+    @Override
+    public double getDouble(Object obj) throws IllegalAccessException {
+        return field.getDouble(obj);
+    }
+
+    @Override
+    public String getString(Object obj) throws IllegalAccessException {
+        return (String) field.get(obj);
+    }
+
+    @Override
+    public Object getObject(Object obj) throws IllegalAccessException  {
+        return field.get(obj);
+    }
 }

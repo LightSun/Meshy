@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Protocal {
+public @interface MessageMember {
 
     /** the priority of this field. in message */
     int value() default 0;

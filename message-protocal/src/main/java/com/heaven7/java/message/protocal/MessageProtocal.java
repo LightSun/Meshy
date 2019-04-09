@@ -9,6 +9,6 @@ public class MessageProtocal {
 
     private String sign;
     private String version;
-    private int encodeType; //-1 means none.
+    private int encodeType;    //-1 means none.
     private byte[] encodedData;
 }

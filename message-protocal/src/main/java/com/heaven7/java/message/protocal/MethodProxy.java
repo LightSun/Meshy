@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * the method proxy
  * @author heaven7
  */
 /*public*/ class MethodProxy extends BaseMemberProxy implements MemberProxy {

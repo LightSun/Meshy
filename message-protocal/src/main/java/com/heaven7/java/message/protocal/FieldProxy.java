@@ -6,6 +6,7 @@ import com.heaven7.java.message.protocal.anno.FieldMember;
 import java.lang.reflect.Field;
 
 /**
+ * the field proxy
  * @author heaven7
  */
 /*public*/ class FieldProxy extends BaseMemberProxy implements MemberProxy {

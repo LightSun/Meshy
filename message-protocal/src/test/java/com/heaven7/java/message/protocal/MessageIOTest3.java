@@ -28,7 +28,7 @@ public class MessageIOTest3 extends MessageIOTest {
         mEntity = entity;
 
         try {
-            MessageIO.eveluateSize(entity);
+            MessageIO.evaluateSize(entity);
         }catch (IllegalStateException e){
             System.out.println(e.getMessage());
             //expect exception

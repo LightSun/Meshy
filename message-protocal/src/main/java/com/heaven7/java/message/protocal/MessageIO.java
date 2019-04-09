@@ -2,10 +2,7 @@ package com.heaven7.java.message.protocal;
 
 import com.heaven7.java.base.anno.NonNull;
 import com.heaven7.java.base.anno.Nullable;
-import com.heaven7.java.base.util.Predicates;
-import com.heaven7.java.base.util.SparseArrayDelegate;
-import com.heaven7.java.base.util.SparseFactory;
-import com.heaven7.java.base.util.TextUtils;
+import com.heaven7.java.base.util.*;
 import com.heaven7.java.message.protocal.adapters.*;
 import com.heaven7.java.message.protocal.anno.FieldMember;
 import com.heaven7.java.message.protocal.anno.FieldMembers;
@@ -20,6 +17,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * the message io.
+ * @author heaven7
+ */
 public final class MessageIO {
 
     private static final Comparator<MemberProxy> sCOMPARATOR = new Comparator<MemberProxy>() {
@@ -62,18 +63,39 @@ public final class MessageIO {
         sPackAdapters.put(MemberProxy.TYPE_CHAR, new CharPackedAdapter());
     }
 
-    public static int eveluateSize(Message<?> message) {
+    /**
+     * init the members to the cache.
+     * @param classes the classes to cache members.
+     * @see MemberProxy
+     */
+    public static void initMembers(List<Class<?>> classes){
+        for (Class<?> clazz : classes){
+            getMemberProxies(clazz);
+        }
+    }
+
+    /**
+     * evaluate the size of message which will be write.
+     * @param message the message
+     * @return the size as bytes count
+     */
+    public static int evaluateSize(Message<?> message) {
+        Throwables.checkNull(message);
         int size = 4; // type is int
         if (!Predicates.isEmpty(message.getMsg())) {
             size += 4 + message.getMsg().length();
         } else {
             size += 4;
         }
-        size += 1 + eveluateSize(message.getEntity());
+        size += 1 + evaluateSize(message.getEntity());
         return size;
     }
-
-    public static int eveluateSize(Object obj) {
+    /**
+     * evaluate the size of object.
+     * @param obj the object if null return 0.
+     * @return the size as bytes count
+     */
+    public static int evaluateSize(Object obj) {
         if (obj == null) {
             return 0;
         }
@@ -85,7 +107,7 @@ public final class MessageIO {
             for (MemberProxy proxy : proxies) {
                 if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
                     Object obj2 = proxy.getObject(obj);
-                    size += eveluateSize(obj2) + 1;
+                    size += evaluateSize(obj2) + 1;
                 } else {
                     TypeAdapter adapter = getTypeAdapter(proxy);
                     if (adapter == null) {
@@ -101,6 +123,12 @@ public final class MessageIO {
         return size;
     }
 
+    /**
+     * write the message to the sink
+     * @param sink the sink as out
+     * @param msg the message to write
+     * @return the write length as bytes count
+     */
     @SuppressWarnings("unchecked")
     public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg) {
         int len = 0;
@@ -126,6 +154,12 @@ public final class MessageIO {
         return len;
     }
 
+    /**
+     * read message from the source
+     * @param source the source to read
+     * @param <T> the entity type
+     * @return the message that was read.
+     */
     @SuppressWarnings("unchecked")
     public static <T> Message<T> readMessage(BufferedSource source) {
         final int type;
@@ -157,6 +191,8 @@ public final class MessageIO {
         }
         return msg;
     }
+
+    //-------------------------------------- privates ===========================================
 
     private static Object readObject(BufferedSource source) {
         try {
@@ -243,21 +279,21 @@ public final class MessageIO {
     private static List<MemberProxy> getMemberProxies(Class<?> clazz) {
         List<MemberProxy> proxies = sCache.get(clazz);
         if (proxies == null) {
-            proxies = getFieldProxies(clazz);
+            proxies = getMemberProxies0(clazz);
             sCache.put(clazz, proxies);
         }
         return proxies;
     }
 
-    private static List<MemberProxy> getFieldProxies(Class<?> clazz) {
+    private static List<MemberProxy> getMemberProxies0(Class<?> clazz) {
         // desc
         List<MemberProxy> out = new ArrayList<>();
-        getMemberProxies0(clazz, out);
+        getMemberProxies1(clazz, out);
         Collections.sort(out, sCOMPARATOR);
         return out;
     }
 
-    private static void getMemberProxies0(Class<?> clazz, List<MemberProxy> out) {
+    private static void getMemberProxies1(Class<?> clazz, List<MemberProxy> out) {
         final Class<?> rawClass = clazz;
         /*
          * 1, has @FieldMembers. isInherit ? judge if has @Inherit.

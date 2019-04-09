@@ -12,7 +12,7 @@ public class ShortPackedAdapter extends BasePackedAdapter {
 
     @Override
     protected int writeValue(BufferedSink sink, Object value) throws IOException {
-        sink.writeShort((Integer) value);
+        sink.writeShort((Short) value);
         return 2;
     }
 

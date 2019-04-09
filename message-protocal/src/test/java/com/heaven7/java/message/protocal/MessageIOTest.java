@@ -31,7 +31,10 @@ public class MessageIOTest {
         this.mEntity = mEntity;
     }
 
-    public Object getEntity(){
+    public Object getWriteEntity(){
+        return mEntity;
+    }
+    public Object getEqualsEntity(){
         return mEntity;
     }
     @Test
@@ -56,7 +59,7 @@ public class MessageIOTest {
         Message<?> msg = MessageIO.readMessage(source);
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg() == null);
-        Assert.assertEquals(msg.getEntity(), mEntity);
+        Assert.assertEquals(msg.getEntity(), getEqualsEntity());
     }
 
     @Test
@@ -67,7 +70,7 @@ public class MessageIOTest {
         Message<?> msg = MessageIO.readMessage(source);
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().length() == 0);
-        Assert.assertEquals(msg.getEntity(), mEntity);
+        Assert.assertEquals(msg.getEntity(), getEqualsEntity());
     }
 
     @Test
@@ -78,11 +81,11 @@ public class MessageIOTest {
         Message<?> msg = MessageIO.readMessage(source);
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().equals("Hello google"));
-        Assert.assertEquals(msg.getEntity(), mEntity);
+        Assert.assertEquals(msg.getEntity(), getEqualsEntity());
     }
 
-    private byte[] testWrite0(String errorMsg){
-        Message<?> msg = Message.create(Message.COMMON, errorMsg, mEntity);
+    protected byte[] testWrite0(String errorMsg){
+        Message<?> msg = Message.create(Message.COMMON, errorMsg, getWriteEntity());
 
         ByteOutputStream baos = new ByteOutputStream();
         BufferedSink sink = Okio.buffer(Okio.sink(baos));

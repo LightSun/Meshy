@@ -22,7 +22,7 @@ public @interface MethodMember {
     int priority() default 0;
 
     /**
-     * define the property of method which used to make-pair(get with set). if you not proguard the method name. this can be empty.
+     * define the property of method which used to make-pair('get' with 'set'). if you do not proguard the method name. this can be empty.
      * @return the property name.
      */
     String property() default "";

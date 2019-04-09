@@ -20,14 +20,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class MessageIO {
+public final class MessageIO {
 
+    private static final Comparator<MemberProxy> sCOMPARATOR = new Comparator<MemberProxy>() {
+        @Override
+        public int compare(MemberProxy o1, MemberProxy o2) {
+            return Integer.compare(o2.getPriority(), o1.getPriority());
+        }
+    };
     private static final WeakHashMap<Class<?>, List<MemberProxy>> sCache;
     // share cache for sub class .
     private static final WeakHashMap<Class<?>, List<MemberProxy>> sShareCache;
 
     private static final SparseArrayDelegate<TypeAdapter> sTypeAdapters;
     private static final SparseArrayDelegate<TypeAdapter> sPackAdapters;
+
+
 
     static {
         sCache = new WeakHashMap<>();
@@ -245,14 +253,7 @@ public class MessageIO {
         // desc
         List<MemberProxy> out = new ArrayList<>();
         getMemberProxies0(clazz, out);
-        Collections.sort(
-                out,
-                new Comparator<MemberProxy>() {
-                    @Override
-                    public int compare(MemberProxy o1, MemberProxy o2) {
-                        return Integer.compare(o2.getPriority(), o1.getPriority());
-                    }
-                });
+        Collections.sort(out, sCOMPARATOR);
         return out;
     }
 
@@ -271,7 +272,7 @@ public class MessageIO {
                     continue;
                 }
             }
-            // a list. which allow subclass inherit
+            // a list. which allow subclass inherit. this will share to cache
             List<MemberProxy> allowInherits = new ArrayList<>();
             // handle fields
             Field[] fields = clazz.getDeclaredFields();
@@ -284,7 +285,9 @@ public class MessageIO {
                         Inherit fieldInherit = f.getAnnotation(Inherit.class);
                         // allow inherit
                         if (fieldInherit != null && fieldInherit.value()) {
-                            out.add(new FieldProxy(f, f.getAnnotation(FieldMember.class)));
+                            FieldProxy proxy = new FieldProxy(f, f.getAnnotation(FieldMember.class));
+                            out.add(proxy);
+                            allowInherits.add(proxy);
                         }
                     }
                 } else {
@@ -311,7 +314,9 @@ public class MessageIO {
                         if (mm != null) {
                             Inherit fieldInherit = f.getAnnotation(Inherit.class);
                             if (fieldInherit != null && fieldInherit.value()) {
-                                out.add(new FieldProxy(f, mm));
+                                FieldProxy proxy = new FieldProxy(f, mm);
+                                out.add(proxy);
+                                allowInherits.add(proxy);
                             }
                         }
                     }
@@ -344,17 +349,24 @@ public class MessageIO {
                     continue;
                 }
                 if (mm.value() == MethodMember.TYPE_GET) {
+                    //get must be no arguments
+                    if(method.getParameterTypes().length > 0){
+                        throw new IllegalStateException("as 'get' method for @MethodMember must have no arguments.");
+                    }
                     gets.add(method);
                 } else {
+                    if(method.getParameterTypes().length != 1){
+                        throw new IllegalStateException("as 'set' method for @MethodMember can only have one argument.");
+                    }
                     sets.add(method);
                 }
             }
             //not all empty
             if(!gets.isEmpty() || !sets.isEmpty()){
                 if(gets.size() >= sets.size()){
-                    makePairMethods(gets, sets, true, isInherit, out, allowInherits);
+                    makePairMethods(gets, sets, true, out, allowInherits);
                 }else {
-                    makePairMethods(sets, gets, false, isInherit, out, allowInherits);
+                    makePairMethods(sets, gets, false, out, allowInherits);
                 }
             }
             //put share cache
@@ -368,9 +380,9 @@ public class MessageIO {
     }
 
     // src.size() > other.size(). for methods. method name should not be proguard.
-    private static void makePairMethods(List<Method> src, List<Method> others, boolean srcIsGet, boolean isInherit,
+    private static void makePairMethods(List<Method> src, List<Method> others, boolean srcIsGet,
                                         List<MemberProxy> out, List<MemberProxy> shareOut) {
-        assert src.size() >= others.size();
+       // assert src.size() >= others.size();
         int bigSize = src.size();
         for (int i = 0; i < bigSize; i++) {
             Method method = src.get(i);
@@ -383,8 +395,7 @@ public class MessageIO {
                 }
             }
             if(other == null){
-                System.err.println("MessageProtocal: can't make-pair for method. " + getMethodLog(method));
-                continue;
+                throw new IllegalStateException("MessageProtocal: can't make-pair for method. " + method.toString());
             }
             MethodProxy proxy;
             Method main;
@@ -397,18 +408,11 @@ public class MessageIO {
             }
             out.add(proxy);
             //share cache for sub class
-            if(!isInherit){
-                Inherit inherit = main.getAnnotation(Inherit.class);
-                if(inherit != null && inherit.value()){
-                    shareOut.add(proxy);
-                }
+            Inherit inherit = main.getAnnotation(Inherit.class);
+            if(inherit != null && inherit.value()){
+                shareOut.add(proxy);
             }
         }
-    }
-
-    private static String getMethodLog(Method method) {
-        //TODO
-        return null;
     }
 
     private static String getPropertyFromMethod(Method method){

@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
         this.get = get;
         this.set = set;
         this.priority = get.getAnnotation(MethodMember.class).priority();
-        this.type = parseType(get.getParameterTypes()[0]);
+        this.type = parseType(get.getReturnType());
     }
 
     @Override

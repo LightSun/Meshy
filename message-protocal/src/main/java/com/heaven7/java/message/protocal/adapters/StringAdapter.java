@@ -41,7 +41,7 @@ public class StringAdapter extends TypeAdapter {
         }else if(len > 0){
             proxy.setString(obj, sink.readUtf8(len));
         }else {
-            throw new UnsupportedEncodingException("wrong len of string.");
+            throw new UnsupportedOperationException("wrong len of string.");
         }
     }
 

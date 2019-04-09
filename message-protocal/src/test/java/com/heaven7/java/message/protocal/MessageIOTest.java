@@ -1,6 +1,6 @@
 package com.heaven7.java.message.protocal;
 
-import com.heaven7.java.message.protocal.anno.MethodMember;
+import com.heaven7.java.message.protocal.entity.TestEntity;
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -11,13 +11,14 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 
 /**
+ * base test for simple entity
  * @author heaven7
  */
 public class MessageIOTest {
 
     protected Object mEntity;
 
-    public void initEntity() {
+    protected void initEntity() {
         TestEntity mEntity = new TestEntity();
         mEntity.setArg1((byte) 1); // 1
         mEntity.setArg2((short) 2); // 4 (saved as int)

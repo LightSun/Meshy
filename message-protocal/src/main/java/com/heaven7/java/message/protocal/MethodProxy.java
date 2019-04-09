@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 /**
  * @author heaven7
  */
-public class MethodProxy implements MemberProxy {
+/*public*/ class MethodProxy extends BaseMemberProxy implements MemberProxy {
 
     private final Method get;
     private final Method set;
@@ -16,11 +16,11 @@ public class MethodProxy implements MemberProxy {
     private final int type;
 
     //method param count: must be one ,and must support message protocal.
-    public MethodProxy(Method get, Method set, MethodMember mm) {
+    public MethodProxy(Method get, Method set) {
         this.get = get;
         this.set = set;
-        this.priority = mm.priority();
-        this.type = FieldProxy.parseType(get.getParameterTypes()[0]);
+        this.priority = get.getAnnotation(MethodMember.class).priority();
+        this.type = parseType(get.getParameterTypes()[0]);
     }
 
     @Override
@@ -78,6 +78,11 @@ public class MethodProxy implements MemberProxy {
     }
 
     @Override
+    public void setChar(Object obj, char value) throws IllegalAccessException, InvocationTargetException {
+        set.invoke(obj, value);
+    }
+
+    @Override
     public byte getByte(Object obj) throws IllegalAccessException, InvocationTargetException{
         return (byte) get.invoke(obj);
     }
@@ -119,5 +124,10 @@ public class MethodProxy implements MemberProxy {
     @Override
     public Object getObject(Object obj) throws IllegalAccessException, InvocationTargetException {
         return get.invoke(obj);
+    }
+
+    @Override
+    public char getChar(Object obj) throws IllegalAccessException, InvocationTargetException {
+        return (char) get.invoke(obj);
     }
 }

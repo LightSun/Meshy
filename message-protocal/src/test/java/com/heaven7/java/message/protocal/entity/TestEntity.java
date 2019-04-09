@@ -1,6 +1,7 @@
-package com.heaven7.java.message.protocal;
+package com.heaven7.java.message.protocal.entity;
 
 import com.heaven7.java.message.protocal.anno.FieldMember;
+import com.heaven7.java.message.protocal.anno.Inherit;
 
 import java.util.Objects;
 
@@ -10,8 +11,10 @@ import java.util.Objects;
 public class TestEntity {
 
     @FieldMember
+    @Inherit
     private byte arg1;
     @FieldMember
+    @Inherit
     private short arg2;
 
     @FieldMember

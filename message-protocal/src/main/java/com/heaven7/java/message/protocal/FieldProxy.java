@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 /**
  * @author heaven7
  */
-public class FieldProxy implements MemberProxy {
+/*public*/ class FieldProxy extends BaseMemberProxy implements MemberProxy {
 
     private final Field field;
     private final int type;
@@ -18,34 +18,6 @@ public class FieldProxy implements MemberProxy {
         this.field = field;
         this.type = parseType(field.getType());
         this.priority = mm != null ? mm.value() : 0;
-    }
-
-    /*private*/ static int parseType(Class<?> memClazz) {
-        if(memClazz == byte.class){
-            return TYPE_BYTE;
-        }
-        else if(memClazz == short.class){
-            return TYPE_SHORT;
-        }
-        else if(memClazz == int.class){
-            return TYPE_INT;
-        }
-        else if(memClazz == long.class){
-            return TYPE_LONG;
-        }
-        else if(memClazz == float.class){
-            return TYPE_FLOAT;
-        }
-        else if(memClazz == double.class){
-            return TYPE_DOUBLE;
-        }
-        else if(memClazz == boolean.class){
-            return TYPE_BOOLEAN;
-        }
-        else if(memClazz == String.class){
-            return TYPE_STRING;
-        }
-        return TYPE_OBJECT;
     }
 
     @Override
@@ -101,6 +73,10 @@ public class FieldProxy implements MemberProxy {
     public void setObject(Object obj, Object value) throws IllegalAccessException {
         field.set(obj, value);
     }
+    @Override
+    public void setChar(Object obj, char value) throws IllegalAccessException{
+        field.set(obj, value);
+    }
 
     @Override
     public byte getByte(Object obj) throws IllegalAccessException {
@@ -145,5 +121,9 @@ public class FieldProxy implements MemberProxy {
     @Override
     public Object getObject(Object obj) throws IllegalAccessException  {
         return field.get(obj);
+    }
+    @Override
+    public char getChar(Object obj) throws IllegalAccessException {
+        return field.getChar(obj);
     }
 }

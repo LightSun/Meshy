@@ -11,10 +11,10 @@ public class Message<T> {
     private String msg;
     private T entity;
 
-    public static <T> Message<T> create(int type, String str, T object){
+    public static <T> Message<T> create(int type, String message, T object){
         Message<T> msg = new Message<>();
         msg.setType(type);
-        msg.setMsg(str);
+        msg.setMsg(message);
         msg.setEntity(object);
         return msg;
     }

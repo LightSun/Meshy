@@ -1,5 +1,8 @@
 package com.heaven7.java.message.protocal;
 
+import com.heaven7.java.base.anno.Nullable;
+import com.heaven7.java.message.protocal.anno.FieldMember;
+
 import java.lang.reflect.Field;
 
 /**
@@ -11,35 +14,35 @@ public class FieldProxy implements MemberProxy {
     private final int type;
     private int priority;
 
-    public FieldProxy(Field field, MessageMember mm) {
+    public FieldProxy(Field field, @Nullable FieldMember mm) {
         this.field = field;
-        this.type = parseType(field);
-        this.priority = mm.value();
+        this.type = parseType(field.getType());
+        this.priority = mm != null ? mm.value() : 0;
     }
 
-    private static int parseType(Field field) {
-        if(field.getType() == byte.class){
+    /*private*/ static int parseType(Class<?> memClazz) {
+        if(memClazz == byte.class){
             return TYPE_BYTE;
         }
-        else if(field.getType() == short.class){
+        else if(memClazz == short.class){
             return TYPE_SHORT;
         }
-        else if(field.getType() == int.class){
+        else if(memClazz == int.class){
             return TYPE_INT;
         }
-        else if(field.getType() == long.class){
+        else if(memClazz == long.class){
             return TYPE_LONG;
         }
-        else if(field.getType() == float.class){
+        else if(memClazz == float.class){
             return TYPE_FLOAT;
         }
-        else if(field.getType() == double.class){
+        else if(memClazz == double.class){
             return TYPE_DOUBLE;
         }
-        else if(field.getType() == boolean.class){
+        else if(memClazz == boolean.class){
             return TYPE_BOOLEAN;
         }
-        else if(field.getType() == String.class){
+        else if(memClazz == String.class){
             return TYPE_STRING;
         }
         return TYPE_OBJECT;

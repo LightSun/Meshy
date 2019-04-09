@@ -1,5 +1,7 @@
 package com.heaven7.java.message.protocal;
 
+import java.lang.reflect.InvocationTargetException;
+
 public interface MemberProxy{
 
     byte TYPE_BYTE = 1;
@@ -15,30 +17,30 @@ public interface MemberProxy{
     int getPriority();
     int getType();
 
-    void setInt(Object obj, int value) throws IllegalAccessException;
-    void setShort(Object obj, short value) throws IllegalAccessException;
+    void setInt(Object obj, int value) throws IllegalAccessException, InvocationTargetException;
+    void setShort(Object obj, short value) throws IllegalAccessException, InvocationTargetException;
 
-    void setByte(Object obj, byte value) throws IllegalAccessException;
+    void setByte(Object obj, byte value) throws IllegalAccessException, InvocationTargetException;
 
-    void setLong(Object obj, long value) throws IllegalAccessException;
+    void setLong(Object obj, long value) throws IllegalAccessException, InvocationTargetException;
 
-    void setBoolean(Object obj, boolean value) throws IllegalAccessException;
+    void setBoolean(Object obj, boolean value) throws IllegalAccessException, InvocationTargetException;
 
-    void setFloat(Object obj, float value) throws IllegalAccessException;
+    void setFloat(Object obj, float value) throws IllegalAccessException, InvocationTargetException;
 
-    void setDouble(Object obj, double value) throws IllegalAccessException;
+    void setDouble(Object obj, double value) throws IllegalAccessException, InvocationTargetException;
 
-    void setString(Object obj, String value) throws IllegalAccessException;
+    void setString(Object obj, String value) throws IllegalAccessException, InvocationTargetException;
 
-    void setObject(Object obj, Object value) throws IllegalAccessException;
+    void setObject(Object obj, Object value) throws IllegalAccessException, InvocationTargetException;
 
-    byte getByte(Object obj) throws IllegalAccessException;
-    int getInt(Object obj)  throws IllegalAccessException;
-    short getShort(Object obj)  throws IllegalAccessException;
-    long getLong(Object obj)  throws IllegalAccessException;
-    boolean getBoolean(Object obj)  throws IllegalAccessException;
-    float getFloat(Object obj)  throws IllegalAccessException;
-    double getDouble(Object obj)  throws IllegalAccessException;
-    String getString(Object obj) throws IllegalAccessException;
-    Object getObject(Object obj)  throws IllegalAccessException;
+    byte getByte(Object obj) throws IllegalAccessException, InvocationTargetException;
+    int getInt(Object obj)  throws IllegalAccessException , InvocationTargetException;
+    short getShort(Object obj)  throws IllegalAccessException , InvocationTargetException;
+    long getLong(Object obj)  throws IllegalAccessException , InvocationTargetException;
+    boolean getBoolean(Object obj)  throws IllegalAccessException, InvocationTargetException;
+    float getFloat(Object obj)  throws IllegalAccessException , InvocationTargetException;
+    double getDouble(Object obj)  throws IllegalAccessException , InvocationTargetException;
+    String getString(Object obj) throws IllegalAccessException , InvocationTargetException;
+    Object getObject(Object obj)  throws IllegalAccessException, InvocationTargetException;
 }

@@ -1,4 +1,4 @@
-package com.heaven7.java.message.protocal.adapters;
+package com.heaven7.java.message.protocal.adapter;
 
 import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.message.protocal.MemberProxy;
@@ -7,7 +7,6 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 
 /**

@@ -1,4 +1,4 @@
-package com.heaven7.java.message.protocal.utils;
+package com.heaven7.java.message.protocal.util;
 
 import java.io.FileOutputStream;
 import java.security.*;

@@ -1,4 +1,4 @@
-package com.heaven7.java.message.protocal.adapters;
+package com.heaven7.java.message.protocal.adapter;
 
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -8,16 +8,17 @@ import java.io.IOException;
 /**
  * @author heaven7
  */
-public class FloatPackedAdapter extends BasePackedAdapter {
+public class CharPackedAdapter extends BasePackedAdapter {
 
     @Override
     protected int writeValue(BufferedSink sink, Object value) throws IOException {
-        sink.writeInt(Float.floatToIntBits((Float) value));
+        sink.writeInt((char)value);
         return 4;
     }
+
     @Override
     protected Object readValue(BufferedSource source) throws IOException {
-        return Float.intBitsToFloat(source.readInt());
+        return (char) source.readInt() ;
     }
 
     @Override

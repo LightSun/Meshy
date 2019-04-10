@@ -3,7 +3,7 @@ package com.heaven7.java.message.protocal;
 import com.heaven7.java.base.anno.NonNull;
 import com.heaven7.java.base.anno.Nullable;
 import com.heaven7.java.base.util.*;
-import com.heaven7.java.message.protocal.adapters.*;
+import com.heaven7.java.message.protocal.adapter.*;
 import com.heaven7.java.message.protocal.anno.FieldMember;
 import com.heaven7.java.message.protocal.anno.FieldMembers;
 import com.heaven7.java.message.protocal.anno.Inherit;

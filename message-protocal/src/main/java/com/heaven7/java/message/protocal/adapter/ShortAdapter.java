@@ -1,4 +1,4 @@
-package com.heaven7.java.message.protocal.adapters;
+package com.heaven7.java.message.protocal.adapter;
 
 import com.heaven7.java.message.protocal.MemberProxy;
 import com.heaven7.java.message.protocal.TypeAdapter;

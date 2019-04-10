@@ -1,4 +1,4 @@
-package com.heaven7.java.message.protocal.adapters;
+package com.heaven7.java.message.protocal.adapter;
 
 import com.heaven7.java.message.protocal.MemberProxy;
 import com.heaven7.java.message.protocal.TypeAdapter;
@@ -11,19 +11,19 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * @author heaven7
  */
-public class FloatAdapter extends TypeAdapter {
+public class CharAdapter extends TypeAdapter {
 
     @Override
     public int write(BufferedSink sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        float value = proxy.getFloat(obj);
-        sink.writeInt(Float.floatToIntBits(value));
+        sink.writeInt((int)proxy.getChar(obj));
         return 4;
     }
 
     @Override
     public void read(BufferedSource sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        proxy.setFloat(obj, Float.intBitsToFloat(sink.readInt()));
+        proxy.setChar(obj, (char)sink.readInt());
     }
+
     @Override
     public int evaluateSize(Object obj, MemberProxy proxy) throws IllegalAccessException, InvocationTargetException {
         return 4;

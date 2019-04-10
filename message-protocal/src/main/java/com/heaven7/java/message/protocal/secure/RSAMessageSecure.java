@@ -3,45 +3,75 @@ package com.heaven7.java.message.protocal.secure;
 import com.heaven7.java.message.protocal.MessageSecure;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+/**
+ * @author heaven7
+ */
+public final class RSAMessageSecure implements MessageSecure {
 
-public class RSAMessageSecure implements MessageSecure {
+    public static final byte MODE_PUBLIC_EN_PRIVATE_DE = 1;
+    public static final byte MODE_PUBLIC_DE_PRIVATE_EN = 2;
 
-    private final Cipher privateCipher;
-    private final Cipher publicCipher;
+    private final Cipher encodeCipher;
+    private final Cipher decodeCipher;
 
-    public RSAMessageSecure(PrivateKey rsaPrivateKey, PublicKey rsaPublicKey) {
-        try {
-            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(rsaPublicKey.getEncoded());
+    public RSAMessageSecure(PublicKey pubKey, PrivateKey priKey){
+        this(pubKey, priKey, MODE_PUBLIC_EN_PRIVATE_DE);
+    }
+    public RSAMessageSecure(PublicKey pubKey, PrivateKey priKey, byte mode){
+        this(pubKey.getEncoded(), priKey.getEncoded(), mode);
+    }
+    public RSAMessageSecure(byte[] publicKey, byte[] privateKey, byte mode){
+        try{
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+            if(mode == MODE_PUBLIC_EN_PRIVATE_DE){
+                //public encode and private decode
+                X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
+                PublicKey pubKey = keyFactory.generatePublic(x509KeySpec);
+                Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+                cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+                encodeCipher = cipher;
 
-            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(rsaPrivateKey.getEncoded());
-            PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+                PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
+                PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);
+                Cipher cipher2 = Cipher.getInstance(keyFactory.getAlgorithm());
+                cipher2.init(Cipher.DECRYPT_MODE, priKey);
+                decodeCipher = cipher2;
+            }else if(mode == MODE_PUBLIC_DE_PRIVATE_EN){
+                //private encode and public decode
+                PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
+                PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);
+                Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+                cipher.init(Cipher.ENCRYPT_MODE, priKey);
+                encodeCipher = cipher;
 
-            privateCipher = Cipher.getInstance("RSA");
-            privateCipher.init(Cipher.DECRYPT_MODE, privateKey);
-
-            publicCipher = Cipher.getInstance("RSA");
-            publicCipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        }catch (NoSuchPaddingException | NoSuchAlgorithmException | KeyException | InvalidKeySpecException e){
-            throw new RuntimeException(e);
+                X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
+                PublicKey pubKey = keyFactory.generatePublic(x509KeySpec);
+                Cipher cipher2 = Cipher.getInstance(keyFactory.getAlgorithm());
+                cipher2.init(Cipher.DECRYPT_MODE, pubKey);
+                decodeCipher = cipher2;
+            }else {
+                throw new IllegalArgumentException("wrong mode");
+            }
+        }catch (Exception e){
+            if( e instanceof RuntimeException){
+                throw (RuntimeException)e;
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     @Override
     public byte[] encode(byte[] data) throws GeneralSecurityException, KeyException {
-        return publicCipher.doFinal(data);
+        return encodeCipher.doFinal(data);
     }
 
     @Override
-    public byte[] decode(byte[] data) throws GeneralSecurityException, KeyException  {
-        return privateCipher.doFinal(data);
+    public byte[] decode(byte[] data) throws GeneralSecurityException, KeyException {
+        return decodeCipher.doFinal(data);
     }
-
 }

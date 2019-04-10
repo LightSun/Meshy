@@ -1,4 +1,4 @@
-package com.heaven7.java.message.protocal.adapters;
+package com.heaven7.java.message.protocal.adapter;
 
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -8,21 +8,21 @@ import java.io.IOException;
 /**
  * @author heaven7
  */
-public class ShortPackedAdapter extends BasePackedAdapter {
+public class DoublePackedAdapter extends BasePackedAdapter {
 
     @Override
     protected int writeValue(BufferedSink sink, Object value) throws IOException {
-        sink.writeShort((Short) value);
-        return 2;
+        sink.writeLong(Double.doubleToLongBits((Double) value));
+        return 8;
     }
 
     @Override
     protected Object readValue(BufferedSource source) throws IOException {
-        return source.readShort();
+        return Double.longBitsToDouble(source.readLong());
     }
 
     @Override
     protected int evaluateSize(Object value) {
-        return 2;
+        return 8;
     }
 }

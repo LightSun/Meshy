@@ -48,25 +48,27 @@ public final class MUtils {
         }
         return protocal;
     }
-    public static int writeMessageProtocal(BufferedSink sink, Message<?> message, String version) throws IOException, GeneralSecurityException{
-        return writeMessageProtocal(sink, message, version, true);
+    public static int writeMessageProtocal(BufferedSink sink, Message<?> message,
+                                           String version, int encodeType) throws IOException, GeneralSecurityException{
+        return writeMessageProtocal(sink, message, version, encodeType, true);
     }
-    public static int evaluateMessageProtocalSize(BufferedSink sink, Message<?> message, String version) throws IOException, GeneralSecurityException{
-        return writeMessageProtocal(sink, message, version, false);
+    public static int evaluateMessageProtocalSize(BufferedSink sink, Message<?> message,
+                                                  String version, int encodeType) throws IOException, GeneralSecurityException{
+        return writeMessageProtocal(sink, message, version, encodeType, false);
     }
-    private static int writeMessageProtocal(BufferedSink sink, Message<?> message, String version, boolean write) throws IOException, GeneralSecurityException{
+    private static int writeMessageProtocal(BufferedSink sink, Message<?> message,
+                                            String version, int encodeType, boolean write) throws IOException, GeneralSecurityException{
         ByteOutputStream buffer = new ByteOutputStream();
         int size = MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message);
         String sign = MessageSecures.signatureMessage(buffer.getBytes());
-        int type = MessageSecures.randomEncodeType();
-        byte[] encodeData = MessageSecures.getMessageSecure(type).encode(buffer.getBytes());
+        byte[] encodeData = MessageSecures.getMessageSecure(encodeType).encode(buffer.getBytes());
         //start write
         if(write){
             sink.writeInt(version.length());
             sink.writeUtf8(version);
             sink.writeInt(sign.length());
             sink.writeUtf8(sign);
-            sink.writeInt(type);
+            sink.writeInt(encodeType);
             sink.writeInt(encodeData.length);
             sink.write(encodeData);
             sink.flush();

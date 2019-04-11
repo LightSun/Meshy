@@ -1,6 +1,7 @@
 package com.heaven7.java.message.protocal.secure;
 
 import com.heaven7.java.message.protocal.MessageSecure;
+import com.heaven7.java.message.protocal.util.SecureUtils;
 
 import javax.crypto.Cipher;
 import java.security.*;
@@ -8,9 +9,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
+ * the RSA message secure used as single key. for example: often client use public key. server use private key.
+ * so this class used to do it.
  * @author heaven7
  */
-public class SingleRSAMessageSecure implements MessageSecure {
+public final class SingleRSAMessageSecure implements MessageSecure {
 
     private final Cipher encodeCipher;
     private final Cipher decodeCipher;

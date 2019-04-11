@@ -56,7 +56,7 @@ public class MessageIOTest {
         initEntity();
         byte[] arr = testWrite0(null);
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source);
+        Message<?> msg = MessageIO.readMessage(source, 1.0f);
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg() == null);
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());
@@ -67,7 +67,7 @@ public class MessageIOTest {
         initEntity();
         byte[] arr = testWrite0("");
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source);
+        Message<?> msg = MessageIO.readMessage(source, 1.0f);
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().length() == 0);
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());
@@ -78,7 +78,7 @@ public class MessageIOTest {
         initEntity();
         byte[] arr = testWrite0("Hello google");
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source);
+        Message<?> msg = MessageIO.readMessage(source, 1.0f);
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().equals("Hello google"));
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());

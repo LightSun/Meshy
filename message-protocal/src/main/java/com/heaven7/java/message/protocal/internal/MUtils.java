@@ -1,78 +1,34 @@
 package com.heaven7.java.message.protocal.internal;
 
-import com.heaven7.java.message.protocal.*;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.Okio;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import com.heaven7.java.base.util.Platforms;
 
 /**
  * @author heaven7
  */
 public final class MUtils {
 
-    public static MessageProtocal readMessageProtocal(BufferedSource source) throws IOException{
-        MessageProtocal protocal = new MessageProtocal();
-        //version
-        int len = source.readInt();
-        protocal.setVersion(source.readUtf8(len));
-        //sign
-        len = source.readInt();
-        protocal.setSign(source.readUtf8(len));
-        //encode type
-        protocal.setEncodeType(source.readInt());
-        //encoded data
-        len = source.readInt();
-        byte[] encodeData = new byte[len];
-        int size = source.read(encodeData);
-        if(size != len){
-            throw new RuntimeException("message error. size is not matched.");
+    public static RuntimeException runtime(Exception e, Class<? extends RuntimeException> clazz, String msg){
+        if(clazz.isAssignableFrom(e.getClass())){
+            msg = e.getMessage() + Platforms.getNewLine() + msg;
         }
-        //handle decode
-        MessageSecure secure = MessageSecures.getMessageSecure(protocal.getEncodeType());
-        if(secure == null){
-            throw new RuntimeException("the encode type not register. type = " + protocal.getEncodeType());
+        Throwable cause = e.getCause() != null ? e.getCause() : e;
+        try{
+            return clazz.getConstructor(String.class, Throwable.class).newInstance(msg, cause);
+        }catch (Exception exp){
+            exp.printStackTrace(); //unexpect
+            if (e instanceof RuntimeException) {
+                return (RuntimeException) e;
+            }else{
+                throw new RuntimeException(msg, e);
+            }
         }
-        try {
-            protocal.setDecodeData(secure.decode(encodeData));
-        } catch (GeneralSecurityException e) {
-           throw new RuntimeException("decode data error." , e);
-        }
-        //handle sign
-        String msg = MessageSecures.signatureMessage(protocal.getDecodeData());
-        if(!msg.equals(protocal.getSign())){
-            throw new IllegalStateException("message sign error. local is " + msg + " ,remote is " + protocal.getSign());
-        }
-        return protocal;
     }
-    public static int writeMessageProtocal(BufferedSink sink, Message<?> message,
-                                           String version, int encodeType) throws IOException, GeneralSecurityException{
-        return writeMessageProtocal(sink, message, version, encodeType, true);
-    }
-    public static int evaluateMessageProtocalSize(BufferedSink sink, Message<?> message,
-                                                  String version, int encodeType) throws IOException, GeneralSecurityException{
-        return writeMessageProtocal(sink, message, version, encodeType, false);
-    }
-    private static int writeMessageProtocal(BufferedSink sink, Message<?> message,
-                                            String version, int encodeType, boolean write) throws IOException, GeneralSecurityException{
-        ByteOutputStream buffer = new ByteOutputStream();
-        int size = MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message);
-        String sign = MessageSecures.signatureMessage(buffer.getBytes());
-        byte[] encodeData = MessageSecures.getMessageSecure(encodeType).encode(buffer.getBytes());
-        //start write
-        if(write){
-            sink.writeInt(version.length());
-            sink.writeUtf8(version);
-            sink.writeInt(sign.length());
-            sink.writeUtf8(sign);
-            sink.writeInt(encodeType);
-            sink.writeInt(encodeData.length);
-            sink.write(encodeData);
-            sink.flush();
+
+    public static RuntimeException runtime(Exception e){
+        if( e instanceof RuntimeException){
+            return (RuntimeException) e;
+        }else {
+            throw new RuntimeException(e);
         }
-        return size + 4 + version.length() + 4 + sign.length() + 4 + 4 + encodeData.length;
     }
 }

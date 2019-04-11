@@ -68,7 +68,7 @@ public final class MessageIO {
      * @param classes the classes to cache members.
      * @see MemberProxy
      */
-    public static void initMembers(List<Class<?>> classes){
+    public static void initializeMembers(List<Class<?>> classes){
         for (Class<?> clazz : classes){
             getMemberProxies(clazz);
         }
@@ -157,11 +157,12 @@ public final class MessageIO {
     /**
      * read message from the source
      * @param source the source to read
+     * @param version the version code to read message
      * @param <T> the entity type
      * @return the message that was read.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Message<T> readMessage(BufferedSource source) {
+    public static <T> Message<T> readMessage(BufferedSource source, float version) {
         final int type;
         String str;
         try {
@@ -179,7 +180,7 @@ public final class MessageIO {
         } catch (IOException e) {
             throw new MessageException(e);
         }
-        Object obj = readObject(source);
+        Object obj = readObject(source, version);
         Message<T> msg = new Message<>();
         try {
             msg.setType(type);
@@ -194,20 +195,20 @@ public final class MessageIO {
 
     //-------------------------------------- privates ===========================================
 
-    private static Object readObject(BufferedSource source) {
+    private static Object readObject(BufferedSource source, float version) {
         try {
             if (source.readByte() != 1) {
                 return null;
             }
             int classLen = source.readInt();
             final String fullName = source.readUtf8(classLen);
-            Class<?> clazz = Class.forName(fullName);
+            Class<?> clazz = MessageConfigManager.getCompatClass(fullName, version);
             Object obj = clazz.newInstance();
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
             for (MemberProxy proxy : proxies) {
                 if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
-                    Object obj2 = readObject(source);
+                    Object obj2 = readObject(source, version);
                     proxy.setObject(obj, obj2);
                 } else {
                     TypeAdapter adapter = getTypeAdapter(proxy);

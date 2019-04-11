@@ -8,7 +8,7 @@ package com.heaven7.java.message.protocal;
  */
 public class MessageProtocal {
 
-    private String version;
+    private float version;
     private String sign;
     private int encodeType;    //-1 means none.
     private byte[] decodeData;
@@ -20,10 +20,10 @@ public class MessageProtocal {
         this.sign = sign;
     }
 
-    public String getVersion() {
+    public float getVersion() {
         return version;
     }
-    public void setVersion(String version) {
+    public void setVersion(float version) {
         this.version = version;
     }
 

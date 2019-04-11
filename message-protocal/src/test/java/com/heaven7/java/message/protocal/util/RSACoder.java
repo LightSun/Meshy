@@ -8,7 +8,6 @@ import java.security.spec.X509EncodedKeySpec;
 public final class RSACoder {
 
     public static final String KEY_ALGORITHM = "RSA";
-
     //must be 512 * n
     private static final int KEY_SIZE = 512;
 

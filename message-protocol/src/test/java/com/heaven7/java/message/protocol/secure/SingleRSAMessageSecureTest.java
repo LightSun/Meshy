@@ -1,7 +1,7 @@
 package com.heaven7.java.message.protocol.secure;
 
 import com.heaven7.java.message.protocol.util.RSACoder;
-import com.heaven7.java.message.protocol.util.SecureUtils;
+import com.heaven7.java.message.protocol.util.RSAUtils;
 import org.junit.Test;
 
 import java.security.KeyPair;
@@ -42,9 +42,9 @@ public class SingleRSAMessageSecureTest {
             String privateStr = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
 
             SingleRSAMessageSecure privateSecure =
-                    new SingleRSAMessageSecure(SecureUtils.getPrivateKey(privateStr).getEncoded(), true);
+                    new SingleRSAMessageSecure(RSAUtils.getPrivateKey(privateStr).getEncoded(), true);
             SingleRSAMessageSecure publicSecure = new SingleRSAMessageSecure(
-                    SecureUtils.getPublicKey(publicStr).getEncoded(), false);
+                    RSAUtils.getPublicKey(publicStr).getEncoded(), false);
 
             byte[] bytes = privateSecure.encode(data);
             byte[] result = publicSecure.decode(bytes);

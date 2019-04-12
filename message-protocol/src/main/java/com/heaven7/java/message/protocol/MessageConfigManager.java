@@ -3,66 +3,43 @@ package com.heaven7.java.message.protocol;
 import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
-import com.heaven7.java.message.protocol.internal.MUtils;
-import com.heaven7.java.message.protocol.secure.MessageSecureFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author heaven7
  */
 public final class MessageConfigManager {
 
-    private static final Comparator<MessageConfig.Pair<String, Float>> sCompatComparator =
-            new Comparator<MessageConfig.Pair<String, Float>>() {
+    private static final Comparator<MessageConfig.Pair<Class<?>, Float>> sCompatComparator =
+            new Comparator<MessageConfig.Pair<Class<?>, Float>>() {
         @Override
-        public int compare(MessageConfig.Pair<String, Float> o1, MessageConfig.Pair<String, Float> o2) {
+        public int compare(MessageConfig.Pair<Class<?>, Float> o1, MessageConfig.Pair<Class<?>, Float> o2) {
             return Float.compare(o1.value, o2.value);
         }
     };
     //-------------------------
-    private static final HashMap<String, List<MessageConfig.Pair<String, Float>>> sCompatClass; //AESC
-    private static final SparseArrayDelegate<MessageSecure> sSecures;
-    private static MessageSignature sMsgSignature;
-    private static String sSignKey;
-    private static float sVersion;
+    private static MessageConfig sConfig;
+    private static final SparseArrayDelegate<MessageSecureWrapper> sSecureWrappers;
 
     static {
-        sSecures = SparseFactory.newSparseArray(5);
-        sCompatClass = new HashMap<>();
+        sSecureWrappers = SparseFactory.newSparseArray(5);
     }
 
+    /**
+     * init message config manager with target config
+     * @param config the message config
+     */
     public static void initialize(MessageConfig config){
-        sVersion = Float.valueOf(config.version);
-        sSignKey = config.signKey;
-        try{
-            sMsgSignature = (MessageSignature) Class.forName(config.signClassName).newInstance();
-        }catch (Exception e){
-            throw new ConfigException("wrong Message Signature class. " + config.signClassName, e);
+        if(sConfig != null){
+            return;
         }
-        //handle secures
-        MessageConfig.Pair<Integer, String> currentPair = null;
-        try{
-            //sample : 1, xxx.xxx(sffsfsf, true);
-            for(MessageConfig.Pair<Integer, String> pair: config.securesPairs){
-                currentPair = pair;
-                String value = pair.value;
-                int index1 = value.indexOf("(");
-                int index2 = value.indexOf(")");
-                String className = value.substring(0, index1);
-                String[] params = value.substring(index1 + 1, index2).trim().split(",");
-                sSecures.put(pair.key, MessageSecureFactory.createMessageSecure(className, params));
-            }
-        }catch (Exception e){
-            throw MUtils.runtime(e, ConfigException.class, "when handle MessageSecure: " + currentPair.value);
-        }
-        //handle compat class
-        if(!Predicates.isEmpty(config.compatClasses)){
-            //sort and put
-            for (MessageConfig.Pair<String, List<MessageConfig.Pair<String, Float>>> pair: config.compatClasses){
-                Collections.sort(pair.value, sCompatComparator);
-                sCompatClass.put(pair.key, pair.value);
-            }
+        sConfig = config;
+        for (List<MessageConfig.Pair<Class<?>, Float>> list : config.compatMap.values()){
+            Collections.sort(list, sCompatComparator); //AESC
         }
     }
 
@@ -74,13 +51,13 @@ public final class MessageConfigManager {
      * @throws ClassNotFoundException if {@linkplain Class#forName(String)} occurs
      */
     public static Class<?> getCompatClass(String className, float version) throws ClassNotFoundException {
-        List<MessageConfig.Pair<String, Float>> pairs = sCompatClass.get(className);
+        List<MessageConfig.Pair<Class<?>, Float>> pairs = sConfig.compatMap.get(className);
         if(Predicates.isEmpty(pairs)){
             return Class.forName(className);
         }
-        for (MessageConfig.Pair<String, Float> pair : pairs){
+        for (MessageConfig.Pair<Class<?>, Float> pair : pairs){
             if(pair.value >= version){
-                return Class.forName(pair.key);
+                return pair.key;
             }
         }
         throw new ConfigException("wrong version code("+ version +") or class compat had not configuration.");
@@ -92,22 +69,51 @@ public final class MessageConfigManager {
      */
     public static int randomEncodeType(){
         try{
-            int index = new Random().nextInt(sSecures.size());
-            return sSecures.keyAt(index);
+            int index = new Random().nextInt(sConfig.secures.size());
+            return sConfig.secures.keyAt(index);
         }catch (IllegalArgumentException e){
             throw new ConfigException("you must config the message secure.");
         }
     }
 
-    public static MessageSecure getMessageSecure(int type){
-        return sSecures.get(type);
-    }
-    public static String signatureMessage(byte[] data){
-        return sMsgSignature.signature(data, sSignKey);
+    /**
+     * get message secure for target type
+     * @param type the secure type for encode and decode
+     * @return the message secure
+     */
+    public static MessageSecureWrapper getMessageSecure(int type){
+        MessageSecureWrapper wrapper = sSecureWrappers.get(type);
+        if(wrapper != null){
+            return wrapper;
+        }
+        MessageSecure secure = sConfig.secures.get(type);
+        if(secure != null){
+            wrapper = new MessageSecureWrapper(secure);
+            sSecureWrappers.put(type, wrapper);
+            return wrapper;
+        }
+        throw new ConfigException("you must config the message secure for type = " + type);
     }
 
+    /**
+     * sign the message
+     * @param data the data to signature
+     * @return the signed value
+     */
+    public static String signatureMessage(byte[] data){
+        return sConfig.signature.signature(data, sConfig.signKey);
+    }
+
+    public static SegmentationPolicy getSegmentationPolicy(){
+        return sConfig.segmentationPolicy;
+    }
+
+    /**
+     * get the version of current used
+     * @return the version
+     */
     public static float getVersion() {
-        return sVersion;
+        return sConfig.version;
     }
     public static class ConfigException extends RuntimeException{
         public ConfigException() {

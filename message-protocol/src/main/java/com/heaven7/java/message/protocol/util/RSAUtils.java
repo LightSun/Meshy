@@ -12,7 +12,7 @@ import java.util.Base64;
  * the secure utils
  * @author heaven7
  */
-public final class SecureUtils {
+public final class RSAUtils {
 
     public static PublicKey getPublicKey(String pubKey) {
         PublicKey publicKey = null;
@@ -39,4 +39,5 @@ public final class SecureUtils {
         }
         return privateKey;
     }
+
 }

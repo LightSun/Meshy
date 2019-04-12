@@ -23,7 +23,7 @@ public final class OkMessage {
     public static <T> Message<T> readMessage(BufferedSource source){
         MessageProtocol protocal;
         try {
-            protocal = MessageProtocolUtils.readMessageProtocal(source);
+            protocal = MessageProtocolUtils.readMessageProtocol(source);
         } catch (IOException e) {
             throw new MessageException("format is error.", e);
         }
@@ -44,7 +44,7 @@ public final class OkMessage {
      */
     public static int writeMessage(BufferedSink sink, Message<?> msg, int encodeType){
         try {
-            return MessageProtocolUtils.writeMessageProtocal(sink, msg, MessageConfigManager.getVersion(), encodeType);
+            return MessageProtocolUtils.writeMessageProtocol(sink, msg, MessageConfigManager.getVersion(), encodeType);
         } catch (IOException | GeneralSecurityException e) {
             throw new MessageException(e);
         }
@@ -58,7 +58,7 @@ public final class OkMessage {
      */
     public static int evaluateMessageSize(Message<?> msg, int encodeType){
         try {
-            return MessageProtocolUtils.evaluateMessageProtocalSize(msg, MessageConfigManager.getVersion(), encodeType);
+            return MessageProtocolUtils.evaluateMessageProtocolSize(msg, MessageConfigManager.getVersion(), encodeType);
         } catch (IOException | GeneralSecurityException e) {
             throw new MessageException(e);
         }

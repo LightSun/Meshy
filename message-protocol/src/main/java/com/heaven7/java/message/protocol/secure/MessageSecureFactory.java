@@ -2,7 +2,7 @@ package com.heaven7.java.message.protocol.secure;
 
 import com.heaven7.java.message.protocol.MessageConfigManager;
 import com.heaven7.java.message.protocol.MessageSecure;
-import com.heaven7.java.message.protocol.util.SecureUtils;
+import com.heaven7.java.message.protocol.util.RSAUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,16 +26,16 @@ public final class MessageSecureFactory {
             }
             Constructor<?> cons = clazz.getConstructor(byte[].class, boolean.class);
             Boolean bool = Boolean.valueOf(params[1]);
-            return (MessageSecure) cons.newInstance((bool ? SecureUtils.getPrivateKey(params[0]).getEncoded() :
-                    SecureUtils.getPublicKey(params[0]).getEncoded()), bool);
+            return (MessageSecure) cons.newInstance((bool ? RSAUtils.getPrivateKey(params[0]).getEncoded() :
+                    RSAUtils.getPublicKey(params[0]).getEncoded()), bool);
         }else if(clazz == RSAMessageSecure.class){
             if(params.length == 2){
                 Constructor<?> cons = clazz.getConstructor(PublicKey.class, PrivateKey.class);
-                return (MessageSecure) cons.newInstance(SecureUtils.getPublicKey(params[0]), SecureUtils.getPrivateKey(params[1]));
+                return (MessageSecure) cons.newInstance(RSAUtils.getPublicKey(params[0]), RSAUtils.getPrivateKey(params[1]));
             }else if(params.length == 3){
                 Constructor<?> cons = clazz.getConstructor(PublicKey.class, PrivateKey.class, byte.class);
-                return (MessageSecure) cons.newInstance(SecureUtils.getPublicKey(params[0]),
-                        SecureUtils.getPrivateKey(params[1]), Byte.valueOf(params[2]));
+                return (MessageSecure) cons.newInstance(RSAUtils.getPublicKey(params[0]),
+                        RSAUtils.getPrivateKey(params[1]), Byte.valueOf(params[2]));
             }else {
                 throw new MessageConfigManager.ConfigException("param count error.");
             }

@@ -1,7 +1,6 @@
 package com.heaven7.java.message.protocol.secure;
 
 import com.heaven7.java.message.protocol.MessageSecure;
-import com.heaven7.java.message.protocol.util.SecureUtils;
 
 import javax.crypto.Cipher;
 import java.security.*;

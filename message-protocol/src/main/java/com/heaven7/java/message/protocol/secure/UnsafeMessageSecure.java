@@ -11,6 +11,7 @@ import java.security.KeyException;
  * @author heaven7
  */
 public class UnsafeMessageSecure implements MessageSecure {
+
     @Override
     public byte[] encode(byte[] data) throws GeneralSecurityException, KeyException {
         return data;

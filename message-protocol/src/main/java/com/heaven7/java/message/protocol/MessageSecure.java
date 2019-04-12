@@ -11,4 +11,5 @@ public interface MessageSecure {
     byte[] encode(byte[] data) throws GeneralSecurityException, KeyException;
 
     byte[] decode(byte[] data) throws GeneralSecurityException, KeyException;
+
 }

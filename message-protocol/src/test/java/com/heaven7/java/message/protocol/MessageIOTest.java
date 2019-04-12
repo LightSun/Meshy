@@ -18,6 +18,14 @@ public class MessageIOTest {
 
     protected Object mEntity;
 
+    public MessageIOTest() {
+        try {
+            MessageConfigManagerTest.initConfig();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     protected void initEntity() {
         TestEntity mEntity = new TestEntity();
         mEntity.setArg1((byte) 1); // 1

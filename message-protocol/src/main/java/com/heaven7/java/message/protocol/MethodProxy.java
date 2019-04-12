@@ -1,6 +1,7 @@
 package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.message.protocol.anno.MethodMember;
+import com.heaven7.java.message.protocol.internal.MUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
     private final Method set;
     private final int priority;
     private final int type;
+    private final String property;
 
     //method param count: must be one ,and must support message protocol.
     public MethodProxy(Method get, Method set) {
@@ -22,6 +24,7 @@ import java.lang.reflect.Method;
         this.set = set;
         this.priority = get.getAnnotation(MethodMember.class).priority();
         this.type = parseType(get.getReturnType());
+        this.property = MUtils.getPropertyFromMethod(get);
     }
 
     @Override
@@ -31,6 +34,10 @@ import java.lang.reflect.Method;
     @Override
     public int getType() {
         return type;
+    }
+    @Override
+    public String getPropertyName() {
+        return property;
     }
 
     @Override

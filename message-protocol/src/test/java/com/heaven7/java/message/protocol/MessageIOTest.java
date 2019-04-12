@@ -98,7 +98,7 @@ public class MessageIOTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedSink sink = Okio.buffer(Okio.sink(baos));
         //msg: 4 + 4 + message.length + entity-length
-        int byteCount = MessageIO.writeMessage(sink, msg);
+        int byteCount = MessageIO.writeMessage(sink, msg, MessageConfigManager.getVersion());
         Assert.assertEquals(byteCount, MessageIO.evaluateSize(msg));
         return baos.toByteArray();
     }

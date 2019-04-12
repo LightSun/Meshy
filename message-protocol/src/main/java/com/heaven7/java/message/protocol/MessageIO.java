@@ -8,6 +8,7 @@ import com.heaven7.java.message.protocol.anno.FieldMember;
 import com.heaven7.java.message.protocol.anno.FieldMembers;
 import com.heaven7.java.message.protocol.anno.Inherit;
 import com.heaven7.java.message.protocol.anno.MethodMember;
+import com.heaven7.java.message.protocol.internal.MUtils;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
@@ -16,6 +17,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.Objects;
+
+import static com.heaven7.java.message.protocol.internal.MUtils.getPropertyFromMethod;
 
 /**
  * the message io.
@@ -127,10 +131,11 @@ public final class MessageIO {
      * write the message to the sink
      * @param sink the sink as out
      * @param msg the message to write
+     * @param version the communication version. if current is server .the version is client version.
      * @return the write length as bytes count
      */
     @SuppressWarnings("unchecked")
-    public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg) {
+    public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg, float version) {
         int len = 0;
         try {
             sink.writeInt(msg.getType());
@@ -146,7 +151,7 @@ public final class MessageIO {
                 sink.writeUtf8(msg.getMsg());
                 len += 4 + msg.getMsg().length();
             }
-            len += writeObject(sink, msg.getEntity());
+            len += writeObject(sink, msg.getEntity(), version);
             sink.flush();
         } catch (IOException e) {
             throw new MessageException(e);
@@ -234,9 +239,10 @@ public final class MessageIO {
      *
      * @param sink the sink
      * @param obj the object
+     * @param version the communication/target version.
      * @return the byte count by write
      */
-    private static int writeObject(BufferedSink sink, @Nullable Object obj) {
+    private static int writeObject(BufferedSink sink, @Nullable Object obj, float version) {
         int len = 0;
         try {
             if (obj == null) {
@@ -251,10 +257,38 @@ public final class MessageIO {
             sink.writeUtf8(name);
             len += 4 + name.length();
 
-            List<MemberProxy> proxies = getMemberProxies(obj.getClass());
+            Class<?> targetClass = obj.getClass();
+            //target version is below local version. we need compat for write.
+            //or else do thing
+            if(version < MessageConfigManager.getVersion()){
+                try {
+                    final Class<?> compatClass = MessageConfigManager.getCompatClass(name, version);
+                    if(compatClass != obj.getClass()){
+                        targetClass = compatClass;
+                        //not the same. so need transfer
+                        if(compatClass.isAssignableFrom(obj.getClass())){
+                            //extend
+                        }else {
+                            //not extend. create and copy data.
+                            try {
+                                Object obj2 = compatClass.newInstance();
+                                MUtils.copyProperties(obj, obj2, getMemberProxies(obj.getClass()),
+                                        getMemberProxies(compatClass));
+                                obj = obj2;
+                            }catch (Exception e){
+                                throw new MessageException("create compat object for class failed.",e);
+                            }
+                        }
+                    }
+                }catch (ClassNotFoundException e){
+                    //ignore
+                }
+            }
+
+            List<MemberProxy> proxies = getMemberProxies(targetClass);
             for (MemberProxy proxy : proxies) {
                 if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
-                    len += writeObject(sink, proxy.getObject(obj));
+                    len += writeObject(sink, proxy.getObject(obj), version);
                 } else {
                     TypeAdapter adapter = getTypeAdapter(proxy);
                     if (adapter == null) {
@@ -450,19 +484,5 @@ public final class MessageIO {
                 shareOut.add(proxy);
             }
         }
-    }
-
-    private static String getPropertyFromMethod(Method method){
-        MethodMember ssm = method.getAnnotation(MethodMember.class);
-        String value = ssm.property();
-        if(TextUtils.isEmpty(value)){
-            String name = method.getName();
-            if(name.startsWith("get") || name.startsWith("set")){
-                value = name.substring(3);
-            }else{
-                value = name;
-            }
-        }
-        return value;
     }
 }

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * the message secure wrapper used to encode and decode data in multi segments.
+ * why need this class ? because some encryption algorithm only support max length data in bytes.
+ * eg: RSA-512 only support 53 bytes data. RSA-1024 only support 117 bytes data.
  * @author heaven7
  */
 public class MessageSecureWrapper {

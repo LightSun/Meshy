@@ -22,6 +22,11 @@ import java.lang.reflect.Field;
     }
 
     @Override
+    public String getPropertyName() {
+        return field.getName();
+    }
+
+    @Override
     public int getPriority() {
         return priority;
     }

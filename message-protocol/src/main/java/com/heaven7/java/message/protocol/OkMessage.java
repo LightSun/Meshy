@@ -39,12 +39,28 @@ public final class OkMessage {
      * write message to the sink
      * @param sink the sink as out
      * @param msg the message to write
+     * @param version the target version to write
+     * @param encodeType the encode type .which effect the message size
+     * @return the write size as bytes count
+     */
+    public static int writeMessage(BufferedSink sink, Message<?> msg, int encodeType, float version){
+        try {
+            return MessageProtocolUtils.writeMessageProtocol(sink, msg, encodeType, version);
+        } catch (IOException | GeneralSecurityException e) {
+            throw new MessageException(e);
+        }
+    }
+
+    /**
+     * write message to the sink
+     * @param sink the sink as out
+     * @param msg the message to write
      * @param encodeType the encode type .which effect the message size
      * @return the write size as bytes count
      */
     public static int writeMessage(BufferedSink sink, Message<?> msg, int encodeType){
         try {
-            return MessageProtocolUtils.writeMessageProtocol(sink, msg, MessageConfigManager.getVersion(), encodeType);
+            return MessageProtocolUtils.writeMessageProtocol(sink, msg, encodeType, MessageConfigManager.getVersion());
         } catch (IOException | GeneralSecurityException e) {
             throw new MessageException(e);
         }
@@ -58,7 +74,21 @@ public final class OkMessage {
      */
     public static int evaluateMessageSize(Message<?> msg, int encodeType){
         try {
-            return MessageProtocolUtils.evaluateMessageProtocolSize(msg, MessageConfigManager.getVersion(), encodeType);
+            return MessageProtocolUtils.evaluateMessageProtocolSize(msg, encodeType, MessageConfigManager.getVersion());
+        } catch (IOException | GeneralSecurityException e) {
+            throw new MessageException(e);
+        }
+    }
+    /**
+     * evaluate the message size as the whole message protocol.
+     * @param msg the message
+     * @param encodeType the encode type .which effect the message size
+     * @param version the version to as write message
+     * @return the expect message size as bytes count
+     */
+    public static int evaluateMessageSize(Message<?> msg, int encodeType, float version){
+        try {
+            return MessageProtocolUtils.evaluateMessageProtocolSize(msg, encodeType, version);
         } catch (IOException | GeneralSecurityException e) {
             throw new MessageException(e);
         }

@@ -25,6 +25,8 @@ public interface MemberProxy{
      */
     boolean isPackedType();
 
+    String getPropertyName();
+
     void setInt(Object obj, int value) throws IllegalAccessException, InvocationTargetException;
     void setShort(Object obj, short value) throws IllegalAccessException, InvocationTargetException;
     void setByte(Object obj, byte value) throws IllegalAccessException, InvocationTargetException;
@@ -50,4 +52,5 @@ public interface MemberProxy{
 
     String getString(Object obj) throws IllegalAccessException , InvocationTargetException;
     Object getObject(Object obj)  throws IllegalAccessException, InvocationTargetException;
+
 }

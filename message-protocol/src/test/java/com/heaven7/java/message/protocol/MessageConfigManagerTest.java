@@ -28,7 +28,6 @@ public class MessageConfigManagerTest {
     public static final int TYPE_RSA_PRIVATE = 1;
     public static final int TYPE_RSA_PUBLIC  = 2;
     public static final int TYPE_RSA         = 3;
-    public static final int TYPE_NONE        = 0;
 
     private static String priKey;
     private static String pubKey;
@@ -40,8 +39,10 @@ public class MessageConfigManagerTest {
             e.printStackTrace();
         }
     }
-
     public static void initConfig() throws Exception{
+        initConfig(VERSION);
+    }
+    public static void initConfig(float version) throws Exception{
         try {
             KeyPair keyPair = RSACoder.initKeys();
             priKey = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
@@ -50,7 +51,7 @@ public class MessageConfigManagerTest {
             throw new RuntimeException(e);
         }
         MessageConfig config = MessageConfig.newConfig();
-        config.version = VERSION;
+        config.version = version;
         config.signKey = "Google/heaven7";
         config.signature = new HMAC_SHA1Signature();
         //rsa-512 means max 53 . 1024 means max 117

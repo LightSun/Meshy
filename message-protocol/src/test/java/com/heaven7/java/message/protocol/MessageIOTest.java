@@ -1,7 +1,6 @@
 package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.message.protocol.entity.TestEntity;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -9,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * base test for simple entity
@@ -95,11 +95,11 @@ public class MessageIOTest {
     protected byte[] testWrite0(String errorMsg){
         Message<?> msg = Message.create(Message.COMMON, errorMsg, getWriteEntity());
 
-        ByteOutputStream baos = new ByteOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedSink sink = Okio.buffer(Okio.sink(baos));
         //msg: 4 + 4 + message.length + entity-length
         int byteCount = MessageIO.writeMessage(sink, msg);
         Assert.assertEquals(byteCount, MessageIO.evaluateSize(msg));
-        return baos.getBytes();
+        return baos.toByteArray();
     }
 }

@@ -1,14 +1,6 @@
 package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.message.protocol.entity.TestEntity2;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.Okio;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
 
 /**
  * base test for simple entity

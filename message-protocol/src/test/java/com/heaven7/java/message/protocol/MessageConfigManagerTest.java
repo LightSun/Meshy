@@ -28,6 +28,7 @@ public class MessageConfigManagerTest {
     public static final int TYPE_RSA_PRIVATE = 1;
     public static final int TYPE_RSA_PUBLIC  = 2;
     public static final int TYPE_RSA         = 3;
+    public static final int TYPE_NONE        = 0;
 
     private static String priKey;
     private static String pubKey;

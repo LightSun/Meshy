@@ -3,6 +3,8 @@ package com.heaven7.java.message.protocol.entity;
 import com.heaven7.java.message.protocol.anno.FieldMembers;
 import com.heaven7.java.message.protocol.anno.Inherit;
 
+import java.util.Objects;
+
 /**
  * the old version of person
  * @author heaven7
@@ -27,5 +29,20 @@ public class Person1 implements IPerson {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person1 person1 = (Person1) o;
+        return age == person1.age &&
+                Objects.equals(name, person1.name);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(age, name);
     }
 }

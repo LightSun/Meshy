@@ -1,10 +1,10 @@
 package com.heaven7.java.message.protocol;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -46,9 +46,9 @@ import java.security.GeneralSecurityException;
     }
     private static int writeMessageProtocol0(BufferedSink sink, Message<?> message,
                                             float version, int encodeType) throws IOException, GeneralSecurityException{
-        ByteOutputStream buffer = new ByteOutputStream();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message);
-        byte[] bufferBytes = buffer.getBytes();
+        byte[] bufferBytes = buffer.toByteArray();
         String sign = MessageConfigManager.signatureMessage(bufferBytes);
         if (sink != null) {
               sink.writeInt(Float.floatToIntBits(version));

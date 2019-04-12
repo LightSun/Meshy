@@ -23,12 +23,14 @@ public class Person extends Person1 implements IPerson {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Person person = (Person) o;
         return Objects.equals(auchor, person.auchor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(auchor);
+
+        return Objects.hash(super.hashCode(), auchor);
     }
 }

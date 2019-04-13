@@ -4,10 +4,7 @@ import com.heaven7.java.base.anno.NonNull;
 import com.heaven7.java.base.anno.Nullable;
 import com.heaven7.java.base.util.*;
 import com.heaven7.java.message.protocol.adapter.*;
-import com.heaven7.java.message.protocol.anno.FieldMember;
-import com.heaven7.java.message.protocol.anno.FieldMembers;
-import com.heaven7.java.message.protocol.anno.Inherit;
-import com.heaven7.java.message.protocol.anno.MethodMember;
+import com.heaven7.java.message.protocol.anno.*;
 import com.heaven7.java.message.protocol.internal.MUtils;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -17,7 +14,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.Objects;
 
 import static com.heaven7.java.message.protocol.internal.MUtils.getPropertyFromMethod;
 
@@ -235,7 +231,7 @@ public final class MessageIO {
     }
 
     /**
-     * wtite the object to the out sink.
+     * write the object to the out sink.
      *
      * @param sink the sink
      * @param obj the object
@@ -252,31 +248,35 @@ public final class MessageIO {
                 sink.writeByte(1);
                 len += 1;
             }
-            String name = obj.getClass().getName();
+            final Class<?> rawClass = obj.getClass();
+            CompatKeyClass cc = rawClass.getAnnotation(CompatKeyClass.class);
+            String name = cc == null ? rawClass.getName() : cc.value().getName();
             sink.writeInt(name.length());
             sink.writeUtf8(name);
             len += 4 + name.length();
 
-            Class<?> targetClass = obj.getClass();
+            //target class to find member proxy.
+            Class<?> targetClass = rawClass;
             //target version is below local version. we need compat for write.
-            //or else do thing
+            //or else do nothing
             if(version < MessageConfigManager.getVersion()){
                 try {
                     final Class<?> compatClass = MessageConfigManager.getCompatClass(name, version);
-                    if(compatClass != obj.getClass()){
+                    if(compatClass != rawClass){
                         targetClass = compatClass;
                         //not the same. so need transfer
-                        if(compatClass.isAssignableFrom(obj.getClass())){
+                        if(compatClass.isAssignableFrom(rawClass)){
                             //extend
                         }else {
                             //not extend. create and copy data.
                             try {
                                 Object obj2 = compatClass.newInstance();
-                                MUtils.copyProperties(obj, obj2, getMemberProxies(obj.getClass()),
+                                MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
                                         getMemberProxies(compatClass));
                                 obj = obj2;
                             }catch (Exception e){
-                                throw new MessageException("create compat object for class failed.",e);
+                                throw new MessageException("create compat object failed, class is "
+                                        + compatClass.getName(), e);
                             }
                         }
                     }

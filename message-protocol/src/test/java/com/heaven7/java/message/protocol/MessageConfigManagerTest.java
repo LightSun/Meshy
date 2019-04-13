@@ -1,7 +1,7 @@
 package com.heaven7.java.message.protocol;
 
-import com.heaven7.java.message.protocol.entity.Person1;
 import com.heaven7.java.message.protocol.entity.Person;
+import com.heaven7.java.message.protocol.entity.Person2;
 import com.heaven7.java.message.protocol.policy.DefaultRSASegmentationPolicy;
 import com.heaven7.java.message.protocol.secure.MessageSecureFactory;
 import com.heaven7.java.message.protocol.secure.RSAMessageSecure;
@@ -24,7 +24,8 @@ import java.util.List;
  */
 public class MessageConfigManagerTest {
 
-    public static final float VERSION = 1.0f;
+    public static final float LOW_VERSION = 1.0f;
+    public static final float HIGH_VERSION = 2.0f;
     public static final int TYPE_RSA_PRIVATE = 1;
     public static final int TYPE_RSA_PUBLIC  = 2;
     public static final int TYPE_RSA         = 3;
@@ -40,7 +41,7 @@ public class MessageConfigManagerTest {
         }
     }
     public static void initConfig() throws Exception{
-        initConfig(VERSION);
+        initConfig(LOW_VERSION);
     }
     public static void initConfig(float version) throws Exception{
         try {
@@ -64,9 +65,9 @@ public class MessageConfigManagerTest {
                 RSAMessageSecure.class.getName(), pubKey, priKey));
 
         List<MessageConfig.Pair<Class<?>, Float>> list = new ArrayList<>();
-        list.add(new MessageConfig.Pair<>(Person1.class, 1f));
-        list.add(new MessageConfig.Pair<>(Person.class, 2f));
-        config.compatMap.put(Person.class.getName(), list);
+        list.add(new MessageConfig.Pair<>(Person.class, LOW_VERSION));
+        list.add(new MessageConfig.Pair<>(Person2.class, HIGH_VERSION));
+        config.compatMap.put(Person2.class.getName(), list);
         MessageConfigManager.initialize(config);
     }
 
@@ -77,7 +78,7 @@ public class MessageConfigManagerTest {
         arr[1] = 1;
         arr[2] = 2;
         arr[3] = 3;
-        Assert.assertTrue(MessageConfigManager.getVersion() == VERSION);
+        Assert.assertTrue(MessageConfigManager.getVersion() == LOW_VERSION);
         MessageSecureWrapper privateSe = MessageConfigManager.getMessageSecure(TYPE_RSA_PRIVATE);
         MessageSecureWrapper publicSe = MessageConfigManager.getMessageSecure(TYPE_RSA_PUBLIC);
         //private encode and public decode
@@ -97,12 +98,12 @@ public class MessageConfigManagerTest {
 
     @Test
     public void test2() throws Exception{
-        Class<?> clazz = MessageConfigManager.getCompatClass(Person.class.getName(), 1f);
-        Assert.assertTrue(clazz == Person1.class);
-        clazz = MessageConfigManager.getCompatClass(Person.class.getName(), 2f);
+        Class<?> clazz = MessageConfigManager.getCompatClass(Person2.class.getName(), 1f);
         Assert.assertTrue(clazz == Person.class);
+        clazz = MessageConfigManager.getCompatClass(Person2.class.getName(), 2f);
+        Assert.assertTrue(clazz == Person2.class);
         try{
-            clazz = MessageConfigManager.getCompatClass(Person.class.getName(), 3f);
+            clazz = MessageConfigManager.getCompatClass(Person2.class.getName(), 3f);
         }catch (MessageConfigManager.ConfigException e){
             //expect
         }
@@ -117,5 +118,12 @@ public class MessageConfigManagerTest {
                 throw new RuntimeException();
             }
         }
+    }
+
+    public static float getLowVersion() {
+        return LOW_VERSION;
+    }
+    public static float getHigherVersion() {
+        return HIGH_VERSION;
     }
 }

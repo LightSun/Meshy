@@ -1,36 +1,48 @@
 package com.heaven7.java.message.protocol.entity;
 
 import com.heaven7.java.message.protocol.anno.FieldMembers;
+import com.heaven7.java.message.protocol.anno.Inherit;
 
 import java.util.Objects;
 
 /**
+ * the old version of person
  * @author heaven7
  */
 @FieldMembers
-public class Person extends Person1 implements IPerson {
+public class Person implements IPerson {
 
-    private String auchor;
+    @Inherit
+    private int age;
+    @Inherit
+    private String name;
 
-    public String getAuchor() {
-        return auchor;
+    public int getAge() {
+        return age;
     }
-    public void setAuchor(String auchor) {
-        this.auchor = auchor;
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Person person = (Person) o;
-        return Objects.equals(auchor, person.auchor);
+        Person person1 = (Person) o;
+        return age == person1.age &&
+                Objects.equals(name, person1.name);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), auchor);
+        return Objects.hash(age, name);
     }
 }

@@ -138,13 +138,14 @@ public class OkMessageTest {
         Assert.assertEquals(mess2.getEntity().getAge(), mess.getEntity().getAge());
     }
 
-    /*@Test // test write non-extend data to lower version
+    @Test // test write non-extend data to lower version
     public void test3() throws Exception{
         try {
             MessageConfigManagerTest.initConfig(1.0f);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        //expect Person3 auto cast to Person.
         String msg = "testCompatLowToHigh";
         Person3 person = new Person3();
         person.setName("Google");
@@ -169,5 +170,5 @@ public class OkMessageTest {
         Assert.assertTrue(mess.getMsg().equals(mess2.getMsg()));
         Assert.assertTrue(mess2.getEntity().getClass() == Person.class);
         Assert.assertEquals(mess2.getEntity().getName(), mess.getEntity().getName());
-    }*/
+    }
 }

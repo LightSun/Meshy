@@ -37,7 +37,6 @@ public final class MessageIO {
     private static final SparseArrayDelegate<TypeAdapter> sPackAdapters;
 
 
-
     static {
         sCache = new WeakHashMap<>();
         sShareCache = new WeakHashMap<>();
@@ -266,7 +265,15 @@ public final class MessageIO {
                 targetClass = MessageConfigManager.getCompatClass(name, localVersion);
                 //target class is a new class.
                 if(!targetClass.isAssignableFrom(rawClass)){
-                    targetClass = rawClass;//TODO 是否要支持非继承类型数据的兼容?
+                    try {
+                        Object obj2 = targetClass.newInstance();
+                        MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
+                                getMemberProxies(targetClass));
+                        obj = obj2;
+                    }catch (Exception e){
+                        throw new MessageException("create compat object failed, class is "
+                                + targetClass.getName(), e);
+                    }
                 }
             }else if(version < localVersion){
                 // high -> low -> write lower version , obj -> degrade

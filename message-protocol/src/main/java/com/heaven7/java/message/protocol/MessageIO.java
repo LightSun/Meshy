@@ -204,9 +204,14 @@ public final class MessageIO {
             }
             int classLen = source.readInt();
             final String fullName = source.readUtf8(classLen);
-            Class<?> clazz = MessageConfigManager.getCompatClass(fullName,
-                    Math.min(version, MessageConfigManager.getVersion()));
-            //Class<?> clazz = MessageConfigManager.getCompatClass(fullName, version);
+            // remote version > < = local version
+            Class<?> clazz;
+            if (version != MessageConfigManager.getVersion()) {
+                clazz = MessageConfigManager.getCompatClass(fullName,
+                        Math.min(version, MessageConfigManager.getVersion()));
+            }else {
+                clazz = Class.forName(fullName);
+            }
             Object obj = clazz.newInstance();
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
@@ -252,48 +257,49 @@ public final class MessageIO {
                 len += 1;
             }
             final Class<?> rawClass = obj.getClass();
-            final String name;
             Class<?> targetClass;   //target class to find member proxy.
-            if(MessageConfigManager.getVersion() != version){
-                CompatKeyClass cc = rawClass.getAnnotation(CompatKeyClass.class);
-                name = cc == null ? rawClass.getName() : cc.value().getName();
-                targetClass = cc == null ? rawClass : cc.value();
-            }else {
+            //target version > < = local version
+            String name = MessageConfigManager.getRepresentClassName(rawClass);
+            if(name == null){
                 name = rawClass.getName();
-                targetClass = rawClass;
             }
+
+            float localVersion = MessageConfigManager.getVersion();
+            if(version > localVersion){
+                targetClass = MessageConfigManager.getCompatClass(name, localVersion);
+                //low -> high ==> write high version . obj not change
+            }else if(version < localVersion){
+                // high -> low -> write lower version , obj -> degrade
+                //target version is below local version. we need compat for write.
+                //or else do nothing
+                final Class<?> compatClass = MessageConfigManager.getCompatClass(name, version);
+                if(compatClass != rawClass){
+                    targetClass = compatClass;
+                    //not the same. so need transfer
+                    if(!compatClass.isAssignableFrom(rawClass)){
+                        //not extend. create and copy data.
+                        try {
+                            Object obj2 = compatClass.newInstance();
+                            MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
+                                    getMemberProxies(compatClass));
+                            obj = obj2;
+                        }catch (Exception e){
+                            throw new MessageException("create compat object failed, class is "
+                                    + compatClass.getName(), e);
+                        }
+                    }
+                }else {
+                    targetClass = rawClass;
+                }
+            }else {
+                targetClass = rawClass;
+                name = rawClass.getName();
+            }
+            //write class name
             sink.writeInt(name.length());
             sink.writeUtf8(name);
             len += 4 + name.length();
-
-            //target version is below local version. we need compat for write.
-            //or else do nothing
-            if(version < MessageConfigManager.getVersion()){
-                try {
-                    final Class<?> compatClass = MessageConfigManager.getCompatClass(name, version);
-                    if(compatClass != rawClass){
-                        targetClass = compatClass;
-                        //not the same. so need transfer
-                        if(compatClass.isAssignableFrom(rawClass)){
-                            //extend
-                        }else {
-                            //not extend. create and copy data.
-                            try {
-                                Object obj2 = compatClass.newInstance();
-                                MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
-                                        getMemberProxies(compatClass));
-                                obj = obj2;
-                            }catch (Exception e){
-                                throw new MessageException("create compat object failed, class is "
-                                        + compatClass.getName(), e);
-                            }
-                        }
-                    }
-                }catch (ClassNotFoundException e){
-                    //ignore
-                }
-            }
-
+            // write data.
             List<MemberProxy> proxies = getMemberProxies(targetClass);
             for (MemberProxy proxy : proxies) {
                 if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
@@ -307,7 +313,7 @@ public final class MessageIO {
                     len += adapter.write(sink, obj, proxy);
                 }
             }
-        } catch (IllegalAccessException | IOException | InvocationTargetException e) {
+        } catch ( ClassNotFoundException | IllegalAccessException | IOException | InvocationTargetException e) {
             throw new MessageException(e);
         }
         return len;

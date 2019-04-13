@@ -4,10 +4,7 @@ import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author heaven7
@@ -24,9 +21,11 @@ public final class MessageConfigManager {
     //-------------------------
     private static MessageConfig sConfig;
     private static final SparseArrayDelegate<MessageSecureWrapper> sSecureWrappers;
+    private static final WeakHashMap<Class<?>, String> sRepresentMap;
 
     static {
         sSecureWrappers = SparseFactory.newSparseArray(5);
+        sRepresentMap = new WeakHashMap<>();
     }
 
     /**
@@ -38,8 +37,12 @@ public final class MessageConfigManager {
             return;
         }
         sConfig = config;
-        for (List<MessageConfig.Pair<Class<?>, Float>> list : config.compatMap.values()){
-            Collections.sort(list, sCompatComparator); //AESC
+        for (Map.Entry<String, List<MessageConfig.Pair<Class<?>, Float>>> en : config.compatMap.entrySet()){
+            Collections.sort(en.getValue(), sCompatComparator); //AESC
+            final String className = en.getKey();
+            for (MessageConfig.Pair<Class<?>, Float> pair : en.getValue()){
+                sRepresentMap.put(pair.key, className);
+            }
         }
     }
 
@@ -115,6 +118,11 @@ public final class MessageConfigManager {
     public static float getVersion() {
         return sConfig.version;
     }
+
+    public static String getRepresentClassName(Class<?> rawClass) {
+        return sRepresentMap.get(rawClass);
+    }
+
     public static class ConfigException extends RuntimeException{
         public ConfigException() {
         }

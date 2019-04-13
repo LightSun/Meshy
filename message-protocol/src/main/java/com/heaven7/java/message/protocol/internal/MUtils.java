@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public final class MUtils {
 
-    public static RuntimeException runtime(Exception e, Class<? extends RuntimeException> clazz, String msg){
+   /* public static RuntimeException runtime(Exception e, Class<? extends RuntimeException> clazz, String msg){
         if(clazz.isAssignableFrom(e.getClass())){
             msg = e.getMessage() + Platforms.getNewLine() + msg;
         }
@@ -38,7 +38,7 @@ public final class MUtils {
         }else {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
     public static void copyProperties(Object from, Object to, List<MemberProxy> fromProxies, List<MemberProxy> toProxies)
             throws InvocationTargetException, IllegalAccessException {
@@ -85,14 +85,12 @@ public final class MUtils {
     }
 
     public static CacheGroup getCacheGroup(){
-        synchronized (MUtils.class){
-            if(sGroup == null){
-                sGroup = new CacheGroup();
-            }
-            return sGroup;
+        if(sGroup == null){
+            sGroup = new CacheGroup();
         }
+        return sGroup;
     }
-    private static CacheGroup sGroup;
+    private static volatile CacheGroup sGroup;
 
     private static class CacheGroup{
         final Map<Key, List<Value>> map = new HashMap<>();

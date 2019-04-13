@@ -2,6 +2,7 @@ package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.message.protocol.entity.Person;
 import com.heaven7.java.message.protocol.entity.Person2;
+import com.heaven7.java.message.protocol.entity.Person3;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -136,4 +137,37 @@ public class OkMessageTest {
         Assert.assertEquals(mess2.getEntity().getName(), mess.getEntity().getName());
         Assert.assertEquals(mess2.getEntity().getAge(), mess.getEntity().getAge());
     }
+
+    /*@Test // test write non-extend data to lower version
+    public void test3() throws Exception{
+        try {
+            MessageConfigManagerTest.initConfig(1.0f);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String msg = "testCompatLowToHigh";
+        Person3 person = new Person3();
+        person.setName("Google");
+        Message<Person3> mess = Message.create(Message.COMMON, msg, person);
+
+        //sender is higher.
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //here we want to send message to client. but client's  version is higher. so we need assign version
+        float applyVersion = MessageConfigManagerTest.getHigher2Version();
+        BufferedSink bufferedSink = Okio.buffer(Okio.sink(baos));
+        int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA, applyVersion);
+
+        int writeSize = OkMessage.writeMessage(bufferedSink, mess, TYPE_RSA, applyVersion);
+        bufferedSink.close();
+        Assert.assertTrue(evaluateSize == writeSize);
+        Assert.assertTrue(writeSize == baos.size());
+
+        //receiver is lower
+        BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(baos.toByteArray())));
+        Message<Person> mess2 = OkMessage.readMessage(source);
+        Assert.assertTrue(mess.getType() == mess2.getType());
+        Assert.assertTrue(mess.getMsg().equals(mess2.getMsg()));
+        Assert.assertTrue(mess2.getEntity().getClass() == Person.class);
+        Assert.assertEquals(mess2.getEntity().getName(), mess.getEntity().getName());
+    }*/
 }

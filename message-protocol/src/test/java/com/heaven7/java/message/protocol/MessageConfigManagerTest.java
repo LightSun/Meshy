@@ -2,6 +2,7 @@ package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.message.protocol.entity.Person;
 import com.heaven7.java.message.protocol.entity.Person2;
+import com.heaven7.java.message.protocol.entity.Person3;
 import com.heaven7.java.message.protocol.policy.DefaultRSASegmentationPolicy;
 import com.heaven7.java.message.protocol.secure.MessageSecureFactory;
 import com.heaven7.java.message.protocol.secure.RSAMessageSecure;
@@ -26,6 +27,7 @@ public class MessageConfigManagerTest {
 
     public static final float LOW_VERSION = 1.0f;
     public static final float HIGH_VERSION = 2.0f;
+    public static final float HIGH_2_VERSION = 3.0f;
     public static final int TYPE_RSA_PRIVATE = 1;
     public static final int TYPE_RSA_PUBLIC  = 2;
     public static final int TYPE_RSA         = 3;
@@ -67,6 +69,7 @@ public class MessageConfigManagerTest {
         List<MessageConfig.Pair<Class<?>, Float>> list = new ArrayList<>();
         list.add(new MessageConfig.Pair<>(Person.class, LOW_VERSION));
         list.add(new MessageConfig.Pair<>(Person2.class, HIGH_VERSION));
+        list.add(new MessageConfig.Pair<>(Person3.class, HIGH_2_VERSION));
         config.compatMap.put(Person.class.getName(), list);
         MessageConfigManager.initialize(config);
     }
@@ -125,5 +128,8 @@ public class MessageConfigManagerTest {
     }
     public static float getHigherVersion() {
         return HIGH_VERSION;
+    }
+    public static float getHigher2Version(){
+        return HIGH_2_VERSION;
     }
 }

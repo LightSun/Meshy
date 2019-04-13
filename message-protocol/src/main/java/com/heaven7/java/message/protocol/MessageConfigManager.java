@@ -19,7 +19,7 @@ public final class MessageConfigManager {
         }
     };
     //-------------------------
-    private static MessageConfig sConfig;
+    private static volatile MessageConfig sConfig;
     private static final SparseArrayDelegate<MessageSecureWrapper> sSecureWrappers;
     private static final WeakHashMap<Class<?>, String> sRepresentMap;
 
@@ -28,13 +28,17 @@ public final class MessageConfigManager {
         sRepresentMap = new WeakHashMap<>();
     }
 
+    public static boolean isInitialized(){
+        return sConfig != null;
+    }
     /**
-     * init message config manager with target config
+     * init message config manager with target config.
      * @param config the message config
      */
     public static void initialize(MessageConfig config){
         if(sConfig != null){
-            return;
+            sRepresentMap.clear();
+            sSecureWrappers.clear();
         }
         sConfig = config;
         for (Map.Entry<String, List<MessageConfig.Pair<Class<?>, Float>>> en : config.compatMap.entrySet()){

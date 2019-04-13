@@ -206,12 +206,8 @@ public final class MessageIO {
             final String fullName = source.readUtf8(classLen);
             // remote version > < = local version
             Class<?> clazz;
-            if (version != MessageConfigManager.getVersion()) {
-                clazz = MessageConfigManager.getCompatClass(fullName,
-                        Math.min(version, MessageConfigManager.getVersion()));
-            }else {
-                clazz = Class.forName(fullName);
-            }
+            clazz = MessageConfigManager.getCompatClass(fullName,
+                    Math.min(version, MessageConfigManager.getVersion()));
             Object obj = clazz.newInstance();
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
@@ -266,8 +262,12 @@ public final class MessageIO {
 
             float localVersion = MessageConfigManager.getVersion();
             if(version > localVersion){
-                targetClass = MessageConfigManager.getCompatClass(name, localVersion);
                 //low -> high ==> write high version . obj not change
+                targetClass = MessageConfigManager.getCompatClass(name, localVersion);
+                //target class is a new class.
+                if(!targetClass.isAssignableFrom(rawClass)){
+                    targetClass = rawClass;//TODO 是否要支持非继承类型数据的兼容?
+                }
             }else if(version < localVersion){
                 // high -> low -> write lower version , obj -> degrade
                 //target version is below local version. we need compat for write.
@@ -292,8 +292,7 @@ public final class MessageIO {
                     targetClass = rawClass;
                 }
             }else {
-                targetClass = rawClass;
-                name = rawClass.getName();
+                targetClass = MessageConfigManager.getCompatClass(name, version);
             }
             //write class name
             sink.writeInt(name.length());

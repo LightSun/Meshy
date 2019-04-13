@@ -67,7 +67,7 @@ public class MessageConfigManagerTest {
         List<MessageConfig.Pair<Class<?>, Float>> list = new ArrayList<>();
         list.add(new MessageConfig.Pair<>(Person.class, LOW_VERSION));
         list.add(new MessageConfig.Pair<>(Person2.class, HIGH_VERSION));
-        config.compatMap.put(Person2.class.getName(), list);
+        config.compatMap.put(Person.class.getName(), list);
         MessageConfigManager.initialize(config);
     }
 
@@ -98,9 +98,9 @@ public class MessageConfigManagerTest {
 
     @Test
     public void test2() throws Exception{
-        Class<?> clazz = MessageConfigManager.getCompatClass(Person2.class.getName(), 1f);
+        Class<?> clazz = MessageConfigManager.getCompatClass(Person.class.getName(), 1f);
         Assert.assertTrue(clazz == Person.class);
-        clazz = MessageConfigManager.getCompatClass(Person2.class.getName(), 2f);
+        clazz = MessageConfigManager.getCompatClass(Person.class.getName(), 2f);
         Assert.assertTrue(clazz == Person2.class);
         try{
             clazz = MessageConfigManager.getCompatClass(Person2.class.getName(), 3f);

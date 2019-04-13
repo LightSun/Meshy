@@ -32,7 +32,6 @@ public class Person2 extends Person implements IPerson {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), auchor);
     }
 }

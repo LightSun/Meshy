@@ -74,23 +74,24 @@ public class OkMessageTest {
         // 3, 低版本数据 发送给高版本。  高版本找到低版本的class.来执行反序列化.
 
         String msg = "testCompatHighToLow";
-        Person2 person = new Person2();
+        //sender object
+        Person person = new Person();
         person.setAge(18);
         person.setName("Google");
-        person.setAuchor("heaven7");
-        Message<Person2> mess = Message.create(Message.COMMON, msg, person);
-        //sender is higher
+        Message<Person> mess = Message.create(Message.COMMON, msg, person);
+
+        //sender is lower
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //here we want to send message to client. but client's  version is lower. so we need assign version
         float applyVersion = MessageConfigManagerTest.getLowVersion();
         BufferedSink bufferedSink = Okio.buffer(Okio.sink(baos));
-        int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA);
+        int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA, applyVersion);
         int writeSize = OkMessage.writeMessage(bufferedSink, mess, TYPE_RSA, applyVersion);
         bufferedSink.close();
         Assert.assertTrue(evaluateSize == writeSize);
         Assert.assertTrue(writeSize == baos.size());
 
-        //receiver is lower
+        //receiver is higher
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(baos.toByteArray())));
         Message<Person> mess2 = OkMessage.readMessage(source);
         Assert.assertTrue(mess.getType() == mess2.getType());
@@ -108,24 +109,25 @@ public class OkMessageTest {
             throw new RuntimeException(e);
         }
         String msg = "testCompatLowToHigh";
-        Person person = new Person();
+        Person2 person = new Person2();
         person.setAge(18);
         person.setName("Google");
-        Message<Person> mess = Message.create(Message.COMMON, msg, person);
+        person.setAuchor("heaven7");
+        Message<Person2> mess = Message.create(Message.COMMON, msg, person);
 
-        //sender is lower.
+        //sender is higher.
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //here we want to send message to client. but client's  version is higher. so we need assign version
         float applyVersion = MessageConfigManagerTest.getHigherVersion();
         BufferedSink bufferedSink = Okio.buffer(Okio.sink(baos));
-        int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA);
+        int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA, applyVersion);
 
         int writeSize = OkMessage.writeMessage(bufferedSink, mess, TYPE_RSA, applyVersion);
         bufferedSink.close();
         Assert.assertTrue(evaluateSize == writeSize);
         Assert.assertTrue(writeSize == baos.size());
 
-        //receiver is higher
+        //receiver is lower
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(baos.toByteArray())));
         Message<Person> mess2 = OkMessage.readMessage(source);
         Assert.assertTrue(mess.getType() == mess2.getType());

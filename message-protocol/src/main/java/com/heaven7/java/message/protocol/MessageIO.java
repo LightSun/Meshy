@@ -196,6 +196,7 @@ public final class MessageIO {
 
     //-------------------------------------- privates ===========================================
 
+    //version: communication version
     private static Object readObject(BufferedSource source, float version) {
         try {
             if (source.readByte() != 1) {
@@ -203,7 +204,9 @@ public final class MessageIO {
             }
             int classLen = source.readInt();
             final String fullName = source.readUtf8(classLen);
-            Class<?> clazz = MessageConfigManager.getCompatClass(fullName, version);
+            Class<?> clazz = MessageConfigManager.getCompatClass(fullName,
+                    Math.min(version, MessageConfigManager.getVersion()));
+            //Class<?> clazz = MessageConfigManager.getCompatClass(fullName, version);
             Object obj = clazz.newInstance();
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
@@ -249,14 +252,20 @@ public final class MessageIO {
                 len += 1;
             }
             final Class<?> rawClass = obj.getClass();
-            CompatKeyClass cc = rawClass.getAnnotation(CompatKeyClass.class);
-            String name = cc == null ? rawClass.getName() : cc.value().getName();
+            final String name;
+            Class<?> targetClass;   //target class to find member proxy.
+            if(MessageConfigManager.getVersion() != version){
+                CompatKeyClass cc = rawClass.getAnnotation(CompatKeyClass.class);
+                name = cc == null ? rawClass.getName() : cc.value().getName();
+                targetClass = cc == null ? rawClass : cc.value();
+            }else {
+                name = rawClass.getName();
+                targetClass = rawClass;
+            }
             sink.writeInt(name.length());
             sink.writeUtf8(name);
             len += 4 + name.length();
 
-            //target class to find member proxy.
-            Class<?> targetClass = rawClass;
             //target version is below local version. we need compat for write.
             //or else do nothing
             if(version < MessageConfigManager.getVersion()){
@@ -339,8 +348,13 @@ public final class MessageIO {
             if (isInherit) {
                 List<MemberProxy> proxies = sShareCache.get(clazz);
                 if (proxies != null) {
-                    out.addAll(proxies);
-                    continue;
+                    out.addAll(0, proxies);
+                    clazz = clazz.getSuperclass();
+                    if (clazz == null) {
+                        break;
+                    }else{
+                        continue;
+                    }
                 }
             }
             // a list. which allow subclass inherit. this will share to cache

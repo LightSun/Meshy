@@ -38,16 +38,16 @@ import java.security.GeneralSecurityException;
     }
     public static int writeMessageProtocol(BufferedSink sink, Message<?> message,
                                            int encodeType, float version) throws IOException, GeneralSecurityException{
-        return writeMessageProtocol0(sink, message, version, encodeType);
+        return writeMessageProtocol0(sink, message, encodeType, version);
     }
     public static int evaluateMessageProtocolSize(Message<?> message,
                                                   int encodeType, float version) throws IOException, GeneralSecurityException{
-        return writeMessageProtocol0(null, message, version, encodeType);
+        return writeMessageProtocol0(null, message, encodeType, version);
     }
     private static int writeMessageProtocol0(BufferedSink sink, Message<?> message,
-                                            float version, int encodeType) throws IOException, GeneralSecurityException{
+                                             int encodeType, float version) throws IOException, GeneralSecurityException{
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message, version);//TODO target version
+        MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message, version);
         byte[] bufferBytes = buffer.toByteArray();
         String sign = MessageConfigManager.signatureMessage(bufferBytes);
         if (sink != null) {

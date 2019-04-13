@@ -1,6 +1,5 @@
 package com.heaven7.java.message.protocol.entity;
 
-import com.heaven7.java.message.protocol.anno.CompatKeyClass;
 import com.heaven7.java.message.protocol.anno.FieldMembers;
 
 import java.util.Objects;
@@ -8,7 +7,6 @@ import java.util.Objects;
 /**
  * @author heaven7
  */
-@CompatKeyClass(Person.class)
 @FieldMembers
 public class Person2 extends Person implements IPerson {
 

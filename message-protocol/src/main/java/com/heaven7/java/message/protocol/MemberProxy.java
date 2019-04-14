@@ -16,6 +16,11 @@ public interface MemberProxy{
     byte TYPE_STRING = 9;
     byte TYPE_OBJECT = 10;
 
+    byte TYPE_LIST  = 11;
+    byte TYPE_ARRAY = 12;
+    byte TYPE_SET   = 12;
+    byte TYPE_MAP   = 13;
+
     int getPriority();
     int getType();
 

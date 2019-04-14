@@ -28,11 +28,16 @@ public final class MessageConfigManager {
         sRepresentMap = new WeakHashMap<>();
     }
 
+    /**
+     * indicate the initialize state
+     * @return true if is initialized
+     */
     public static boolean isInitialized(){
         return sConfig != null;
     }
     /**
      * init message config manager with target config.
+     * you should only call this once.
      * @param config the message config
      */
     public static void initialize(MessageConfig config){
@@ -111,6 +116,10 @@ public final class MessageConfigManager {
         return sConfig.signature.signature(data, sConfig.signKey);
     }
 
+    /**
+     * get the segmentation policy
+     * @return the policy
+     */
     public static SegmentationPolicy getSegmentationPolicy(){
         return sConfig.segmentationPolicy;
     }
@@ -123,8 +132,17 @@ public final class MessageConfigManager {
         return sConfig.version;
     }
 
+    /**
+     * get the represent compat class name for target class .
+     * @param rawClass the raw class
+     * @return the represent class name.
+     */
     public static String getRepresentClassName(Class<?> rawClass) {
-        return sRepresentMap.get(rawClass);
+        String classname = sRepresentMap.get(rawClass);
+        if(classname == null){
+            return rawClass.getName();
+        }
+        return classname;
     }
 
     public static class ConfigException extends RuntimeException{

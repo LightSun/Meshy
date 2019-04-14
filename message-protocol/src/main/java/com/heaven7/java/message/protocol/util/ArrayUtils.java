@@ -8,6 +8,12 @@ import java.util.List;
  */
 public class ArrayUtils {
 
+    /**
+     * split the target data to multi segment
+     * @param data the data
+     * @param len the max length of segment
+     * @return the split data
+     */
     public static List<byte[]> splitArray(byte[] data, int len) {
         int x = data.length / len;
         int y = data.length % len;

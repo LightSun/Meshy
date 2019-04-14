@@ -260,9 +260,8 @@ public final class MessageIO {
             }
 
             float localVersion = MessageConfigManager.getVersion();
-            if(version > localVersion){
-                //low -> high ==> write high version . obj not change
-                targetClass = MessageConfigManager.getCompatClass(name, localVersion);
+            if(localVersion != version){
+                targetClass = MessageConfigManager.getCompatClass(name, Math.min(localVersion, version));
                 //target class is a new class.
                 if(!targetClass.isAssignableFrom(rawClass)){
                     try {
@@ -275,30 +274,7 @@ public final class MessageIO {
                                 + targetClass.getName(), e);
                     }
                 }
-            }else if(version < localVersion){
-                // high -> low -> write lower version , obj -> degrade
-                //target version is below local version. we need compat for write.
-                //or else do nothing
-                final Class<?> compatClass = MessageConfigManager.getCompatClass(name, version);
-                if(compatClass != rawClass){
-                    targetClass = compatClass;
-                    //not the same. so need transfer
-                    if(!compatClass.isAssignableFrom(rawClass)){
-                        //not extend. create and copy data.
-                        try {
-                            Object obj2 = compatClass.newInstance();
-                            MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
-                                    getMemberProxies(compatClass));
-                            obj = obj2;
-                        }catch (Exception e){
-                            throw new MessageException("create compat object failed, class is "
-                                    + compatClass.getName(), e);
-                        }
-                    }
-                }else {
-                    targetClass = rawClass;
-                }
-            }else {
+            } else {
                 targetClass = MessageConfigManager.getCompatClass(name, version);
             }
             //write class name

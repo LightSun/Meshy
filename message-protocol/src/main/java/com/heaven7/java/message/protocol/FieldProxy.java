@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 
     public FieldProxy(Field field, @Nullable FieldMember mm) {
         this.field = field;
-        this.type = parseType(field.getType());
+        this.type = parseType(field.getGenericType());
         this.priority = mm != null ? mm.value() : 0;
     }
 

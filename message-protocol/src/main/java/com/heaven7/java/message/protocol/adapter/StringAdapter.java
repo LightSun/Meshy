@@ -1,7 +1,6 @@
 package com.heaven7.java.message.protocol.adapter;
 
 import com.heaven7.java.base.util.Predicates;
-import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -15,8 +14,8 @@ import java.lang.reflect.InvocationTargetException;
 public class StringAdapter extends TypeAdapter {
 
     @Override
-    public int write(BufferedSink sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        String msg = proxy.getString(obj);
+    public int write(BufferedSink sink, Object obj) throws IOException{
+        String msg = (String) obj;
         if(msg == null){
             sink.writeInt(-1);
             return 4;
@@ -31,22 +30,22 @@ public class StringAdapter extends TypeAdapter {
     }
 
     @Override
-    public void read(BufferedSource sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
+    public Object read(BufferedSource sink) throws IOException{
         int len = sink.readInt();
         if(len == -1){
-            proxy.setString(obj, null);
+            return null;
         }else if(len == 0){
-            proxy.setString(obj, "");
+            return "";
         }else if(len > 0){
-            proxy.setString(obj, sink.readUtf8(len));
+            return sink.readUtf8(len);
         }else {
             throw new UnsupportedOperationException("wrong len of string.");
         }
     }
 
     @Override
-    public int evaluateSize(Object obj, MemberProxy proxy) throws IllegalAccessException, InvocationTargetException {
-        String msg = proxy.getString(obj);
+    public int evaluateSize(Object obj){
+        String msg = (String) obj;
         if(Predicates.isEmpty(msg)){
             return 4;
         }else {

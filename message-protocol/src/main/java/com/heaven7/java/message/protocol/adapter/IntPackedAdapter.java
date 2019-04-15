@@ -21,7 +21,7 @@ public class IntPackedAdapter extends BasePackedAdapter {
         return source.readInt();
     }
     @Override
-    protected int evaluateSize(Object value) {
+    protected int evaluateSize0(Object value) {
         return 4;
     }
 }

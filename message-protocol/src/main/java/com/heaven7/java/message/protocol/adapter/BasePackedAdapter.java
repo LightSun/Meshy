@@ -1,12 +1,10 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * the base packed adapter for packed primitive type.
@@ -15,8 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class BasePackedAdapter extends TypeAdapter {
 
     @Override
-    public final int write(BufferedSink sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        Object value = proxy.getObject(obj);
+    public final int write(BufferedSink sink, Object value) throws IOException{
         if(value == null){
             sink.writeByte(0);
             return 1;
@@ -27,19 +24,18 @@ public abstract class BasePackedAdapter extends TypeAdapter {
     }
 
     @Override
-    public final void read(BufferedSource sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException{
+    public final Object read(BufferedSource sink) throws IOException{
         boolean isNull = sink.readByte() == 0;
         if(isNull){
-            proxy.setObject(obj, null);
+            return null;
         }else {
-            proxy.setObject(obj, readValue(sink));
+            return readValue(sink);
         }
     }
 
     @Override
-    public final int evaluateSize(Object obj, MemberProxy proxy) throws IllegalAccessException, InvocationTargetException {
-        Object value = proxy.getObject(obj);
-        return value != null ? evaluateSize(value) + 1 : 1;
+    public final int evaluateSize(Object value){
+        return value != null ? evaluateSize0(value) + 1 : 1;
     }
 
     /**
@@ -64,5 +60,5 @@ public abstract class BasePackedAdapter extends TypeAdapter {
      * @param value the value . never null
      * @return the size as byte count
      */
-    protected abstract int evaluateSize(Object value);
+    protected abstract int evaluateSize0(Object value);
 }

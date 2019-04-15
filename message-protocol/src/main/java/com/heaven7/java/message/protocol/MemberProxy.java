@@ -32,30 +32,7 @@ public interface MemberProxy{
 
     String getPropertyName();
 
-    void setInt(Object obj, int value) throws IllegalAccessException, InvocationTargetException;
-    void setShort(Object obj, short value) throws IllegalAccessException, InvocationTargetException;
-    void setByte(Object obj, byte value) throws IllegalAccessException, InvocationTargetException;
-    void setLong(Object obj, long value) throws IllegalAccessException, InvocationTargetException;
-
-    void setBoolean(Object obj, boolean value) throws IllegalAccessException, InvocationTargetException;
-    void setFloat(Object obj, float value) throws IllegalAccessException, InvocationTargetException;
-    void setDouble(Object obj, double value) throws IllegalAccessException, InvocationTargetException;
-    void setChar(Object obj, char value) throws IllegalAccessException, InvocationTargetException;
-
-    void setString(Object obj, String value) throws IllegalAccessException, InvocationTargetException;
     void setObject(Object obj, Object value) throws IllegalAccessException, InvocationTargetException;
-
-    byte getByte(Object obj) throws IllegalAccessException, InvocationTargetException;
-    int getInt(Object obj)  throws IllegalAccessException , InvocationTargetException;
-    short getShort(Object obj)  throws IllegalAccessException , InvocationTargetException;
-    long getLong(Object obj)  throws IllegalAccessException , InvocationTargetException;
-
-    boolean getBoolean(Object obj)  throws IllegalAccessException, InvocationTargetException;
-    float getFloat(Object obj)  throws IllegalAccessException , InvocationTargetException;
-    double getDouble(Object obj)  throws IllegalAccessException , InvocationTargetException;
-    char getChar(Object obj) throws IllegalAccessException, InvocationTargetException;
-
-    String getString(Object obj) throws IllegalAccessException , InvocationTargetException;
     Object getObject(Object obj)  throws IllegalAccessException, InvocationTargetException;
 
 }

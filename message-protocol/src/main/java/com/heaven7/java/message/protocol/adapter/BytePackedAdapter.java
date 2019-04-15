@@ -22,7 +22,7 @@ public final class BytePackedAdapter extends BasePackedAdapter {
     }
 
     @Override
-    protected int evaluateSize(Object value){
+    protected int evaluateSize0(Object value){
         return 1;
     }
 }

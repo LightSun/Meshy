@@ -22,7 +22,7 @@ public class CharPackedAdapter extends BasePackedAdapter {
     }
 
     @Override
-    protected int evaluateSize(Object value){
+    protected int evaluateSize0(Object value){
         return 4;
     }
 }

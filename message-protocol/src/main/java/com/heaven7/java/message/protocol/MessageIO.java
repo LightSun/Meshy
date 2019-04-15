@@ -113,7 +113,7 @@ public final class MessageIO {
                         throw new UnsupportedOperationException(
                                 "un-register type adapter. type = " + proxy.getType());
                     }
-                    size += adapter.evaluateSize(obj, proxy);
+                    size += adapter.evaluateSize(proxy.getObject(obj));
                 }
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -220,7 +220,8 @@ public final class MessageIO {
                         throw new UnsupportedOperationException(
                                 "un-register type adapter. type = " + proxy.getType());
                     }
-                    adapter.read(source, obj, proxy);
+                    Object value = adapter.read(source);
+                    proxy.setObject(obj, value);
                 }
             }
             return obj;
@@ -292,7 +293,7 @@ public final class MessageIO {
                         throw new UnsupportedOperationException(
                                 "un-register type adapter. type = " + proxy.getType());
                     }
-                    len += adapter.write(sink, obj, proxy);
+                    len += adapter.write(sink, proxy.getObject(obj));
                 }
             }
         } catch ( ClassNotFoundException | IllegalAccessException | IOException | InvocationTargetException e) {

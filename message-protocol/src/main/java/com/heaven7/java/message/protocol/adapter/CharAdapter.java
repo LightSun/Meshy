@@ -1,6 +1,5 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -14,18 +13,18 @@ import java.lang.reflect.InvocationTargetException;
 public class CharAdapter extends TypeAdapter {
 
     @Override
-    public int write(BufferedSink sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        sink.writeInt((int)proxy.getChar(obj));
+    public int write(BufferedSink sink, Object obj) throws IOException{
+        sink.writeInt((char)obj);
         return 4;
     }
 
     @Override
-    public void read(BufferedSource sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        proxy.setChar(obj, (char)sink.readInt());
+    public Object read(BufferedSource sink) throws IOException{
+        return (char)sink.readInt();
     }
 
     @Override
-    public int evaluateSize(Object obj, MemberProxy proxy) throws IllegalAccessException, InvocationTargetException {
+    public int evaluateSize(Object obj){
         return 4;
     }
 }

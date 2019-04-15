@@ -1,6 +1,5 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -14,18 +13,17 @@ import java.lang.reflect.InvocationTargetException;
 public class FloatAdapter extends TypeAdapter {
 
     @Override
-    public int write(BufferedSink sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        float value = proxy.getFloat(obj);
-        sink.writeInt(Float.floatToIntBits(value));
+    public int write(BufferedSink sink, Object obj) throws IOException{
+        sink.writeInt(Float.floatToIntBits((Float)obj));
         return 4;
     }
 
     @Override
-    public void read(BufferedSource sink, Object obj, MemberProxy proxy) throws IOException, IllegalAccessException, InvocationTargetException {
-        proxy.setFloat(obj, Float.intBitsToFloat(sink.readInt()));
+    public Object read(BufferedSource sink) throws IOException{
+        return Float.intBitsToFloat(sink.readInt());
     }
     @Override
-    public int evaluateSize(Object obj, MemberProxy proxy) throws IllegalAccessException, InvocationTargetException {
+    public int evaluateSize(Object obj){
         return 4;
     }
 }

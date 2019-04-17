@@ -2,6 +2,7 @@ package com.heaven7.java.message.protocol.adapter;
 
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.TypeAdapterContext;
+import com.heaven7.java.message.protocol.Wrapper;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
@@ -62,7 +63,7 @@ public class MapTypeAdapter extends TypeAdapter {
             Object value = valueAdapter.read(source);
             map.put(key, value);
         }
-        return map;
+        return !(map instanceof Wrapper) ? map: ((Wrapper) map).unwrap();
     }
 
     @Override
@@ -71,7 +72,7 @@ public class MapTypeAdapter extends TypeAdapter {
             return 4;
         }
         int total = 0;
-        Map map = (Map) obj;
+        Map map = context.getMap(obj);
         total += 4;
 
         String name = obj.getClass().getName();

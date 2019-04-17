@@ -1,5 +1,6 @@
 package com.heaven7.java.message.protocol;
 
+import com.heaven7.java.base.util.SparseArray;
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
 
@@ -16,29 +17,27 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
 
     @Override
     public Map createMap(String name) {
-        if(SparseArrayMap.class.getName().equals(name)){
-            return new SparseArrayMap(SparseFactory.newSparseArray(10));
-        }else {
-            try {
-                Class<?> clazz = Class.forName(name);
-                if(ConcurrentHashMap.class.isAssignableFrom(clazz)){
-                    return new ConcurrentHashMap();
-                }
-                else if(WeakHashMap.class.isAssignableFrom(clazz)){
-                    return new WeakHashMap();
-                }
-                else if(LinkedHashMap.class.isAssignableFrom(clazz)){
-                    return new LinkedHashMap();
-                }
-                else if(SortedMap.class.isAssignableFrom(clazz)){
-                    return new TreeMap();
-                }
-                else if(Map.class.isAssignableFrom(clazz)){
-                    return new HashMap();
-                }
-            } catch (ClassNotFoundException e) {
-                //ignore
+        try {
+            Class<?> clazz = Class.forName(name);
+            if(SparseArrayDelegate.class.isAssignableFrom(clazz)){
+                return new SparseArrayMap(SparseFactory.newSparseArray(10));
+            } else if(ConcurrentHashMap.class.isAssignableFrom(clazz)){
+                return new ConcurrentHashMap();
             }
+            else if(WeakHashMap.class.isAssignableFrom(clazz)){
+                return new WeakHashMap();
+            }
+            else if(LinkedHashMap.class.isAssignableFrom(clazz)){
+                return new LinkedHashMap();
+            }
+            else if(SortedMap.class.isAssignableFrom(clazz)){
+                return new TreeMap();
+            }
+            else if(Map.class.isAssignableFrom(clazz)){
+                return new HashMap();
+            }
+        } catch (ClassNotFoundException e) {
+            //ignore
         }
         return null;
     }
@@ -81,7 +80,7 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
         return mMap.get(type);
     }
 
-    private static class SparseArrayMap<V> implements Map<Integer,V>{
+    private static class SparseArrayMap<V> implements Map<Integer,V>, Wrapper<SparseArrayDelegate<V>>{
 
         private final SparseArrayDelegate<V> sad ;
         public SparseArrayMap(SparseArrayDelegate<V> sad) {
@@ -147,6 +146,10 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
                 set.add(new Entry0<>(sad, sad.keyAt(i), sad.valueAt(i)));
             }
             return set;
+        }
+        @Override
+        public SparseArrayDelegate<V> unwrap() {
+            return sad;
         }
 
         private static class Entry0<V> implements Entry<Integer, V>{

@@ -1,17 +1,16 @@
 package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.base.anno.NonNull;
-import com.heaven7.java.base.anno.Nullable;
 import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.base.util.Throwables;
-import com.heaven7.java.message.protocol.adapter.NullTypeAdapter;
 import com.heaven7.java.message.protocol.adapter.ObjectTypeAdapter;
-import com.heaven7.java.message.protocol.internal.$MPTypes;
 import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
 import java.io.IOException;
+
+import static com.heaven7.java.message.protocol.TypeAdapters.getTypeAdapter;
 
 /**
  * the message io.
@@ -19,22 +18,18 @@ import java.io.IOException;
  */
 public final class MessageIO {
 
-    public static TypeAdapter getTypeAdapter(@Nullable Object obj, float applyVersion){
-        if(obj == null){
-            return NullTypeAdapter.INSTANCE;
-        }
-        Class<?> clazz = obj.getClass();
-        $MPTypes.GenericNode node = new $MPTypes.GenericNode();
-        $MPTypes.parseNode(clazz, clazz, node);
-        return node.getTypeAdapter(SimpleMessageProtocolContext.getDefault(),
-                MessageConfigManager.getTypeAdapterContext(), applyVersion);
-    }
+    /**
+     * evaluate the size of message which will be write.
+     * @param message the message
+     * @return the size as bytes count
+     */
     public static int evaluateSize(Message<?> message) {
         return evaluateSize(message, MessageConfigManager.getVersion());
     }
     /**
      * evaluate the size of message which will be write.
      * @param message the message
+     * @param applyVersion the apply version
      * @return the size as bytes count
      */
     public static int evaluateSize(Message<?> message, float applyVersion) {
@@ -59,6 +54,7 @@ public final class MessageIO {
     /**
      * evaluate the size of object.
      * @param obj the object if null return 0.
+     * @param version the apply version
      * @return the size as bytes count
      */
     public static int evaluateSize(Object obj, float version) {
@@ -126,7 +122,8 @@ public final class MessageIO {
      */
     @SuppressWarnings("unchecked")
     public static <T> Message<T> readMessage(BufferedSource source, float version) {
-        return readMessage(source, new ObjectTypeAdapter(MessageConfigManager.getTypeAdapterContext(), version));
+        return readMessage(source, new ObjectTypeAdapter(SimpleMessageProtocolContext.getDefault(),
+                MessageConfigManager.getTypeAdapterContext(), version));
     }
     /**
      * read message from the source

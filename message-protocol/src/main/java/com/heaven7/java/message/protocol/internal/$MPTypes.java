@@ -72,7 +72,15 @@ public class $MPTypes {
             TypeVariablePair pair = getTypeVariablePair(ownerClass, name);
             parent.addTypeVariablePair(pair);
         } else if(type instanceof Class){
-            parent.type =(Class<?>) type;
+            Class<?> clazz = (Class<?>) type;
+            if(clazz.isArray()){
+                parent.isArray = true;
+                GenericNode node = new GenericNode();
+                parseNode(ownerClass, clazz.getComponentType(),  node);
+                parent.addNode(node);
+            }else {
+                parent.type = clazz;
+            }
         }else {
             throw new RuntimeException("" + type);
         }
@@ -137,7 +145,7 @@ public class $MPTypes {
             if(type != null){
                 //prefer dynamic register
                 TypeAdapter typeAdapter = context.getTypeAdapter(type);
-                if(typeAdapter != null){ //TODO change to node
+                if(typeAdapter != null){
                     return typeAdapter;
                 }
                 //base types
@@ -152,7 +160,7 @@ public class $MPTypes {
                     return new MapTypeAdapter(context, getSubNode(0).getTypeAdapter(mpContext, context, applyVersion),
                             getSubNode(1).getTypeAdapter(mpContext, context, applyVersion));
                 }else {
-                    return new ObjectTypeAdapter(context, applyVersion);
+                    return new ObjectTypeAdapter(mpContext, context, applyVersion);
                 }
             }else if(!Predicates.isEmpty(pairs)){
                 return pairs.get(0).node.getTypeAdapter(mpContext, context, applyVersion);

@@ -2,7 +2,6 @@ package com.heaven7.java.message.protocol.adapter;
 
 import com.heaven7.java.message.protocol.*;
 import com.heaven7.java.message.protocol.internal.MUtils;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
@@ -16,11 +15,12 @@ import java.util.List;
  */
 public class ObjectTypeAdapter extends TypeAdapter {
 
-    private final MessageProtocolContext mMPContext = SimpleMessageProtocolContext.getDefault();
+    private final MessageProtocolContext mMPContext;
     private final TypeAdapterContext context;
     private final float version;
 
-    public ObjectTypeAdapter(TypeAdapterContext context, float applyVersion) {
+    public ObjectTypeAdapter(MessageProtocolContext mMPContext, TypeAdapterContext context, float applyVersion) {
+        this.mMPContext = mMPContext;
         this.context = context;
         this.version = applyVersion;
     }

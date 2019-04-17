@@ -9,15 +9,33 @@ import java.util.Map;
  */
 public interface TypeAdapterContext {
 
-    //name is class name
+    /**
+     * create map from target 'Map' class. eg: {@linkplain com.heaven7.java.base.util.SparseArray}.
+     * @param name the class name of 'Map'
+     * @return the map
+     */
     Map createMap(String name);
 
-    //obj can be map or sparseArray and etc.
+    /**
+     * get the map from target object . obj can be normal map or {@linkplain com.heaven7.java.base.util.SparseArrayDelegate}
+     * and etc.
+     * @param obj the object type of 'map'
+     * @return the transformed map
+     */
     Map getMap(Object obj);
 
-    //name is class name
+    /**
+     * create collection from target class name
+     * @param name the class which often extend collection. like list, set and etc.
+     * @return the collection
+     */
     Collection createCollection(String name);
 
+    /**
+     * indicate the class can be used as map or not.
+     * @param rawType the class type
+     * @return true if can used as map.
+     */
     boolean isMap(Class<?> rawType);
 
     void registerTypeAdapter(Type type, TypeAdapter adapter);

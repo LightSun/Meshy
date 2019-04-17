@@ -9,9 +9,11 @@ import java.io.IOException;
 /**
  * @author heaven7
  */
-public class NullTypeAdapter extends TypeAdapter{
+public final class NullTypeAdapter extends TypeAdapter{
 
     public static final NullTypeAdapter INSTANCE = new NullTypeAdapter();
+
+    private NullTypeAdapter(){}
 
     @Override
     public int write(BufferedSink sink, Object obj) throws IOException {

@@ -42,6 +42,8 @@ public class MessageConfig {
      */
     public Map<String, List<Pair<Class<?>, Float>>> compatMap;
 
+    public TypeAdapterContext context;
+
 
     public static MessageConfig newConfig(){
         MessageConfig config = new MessageConfig();

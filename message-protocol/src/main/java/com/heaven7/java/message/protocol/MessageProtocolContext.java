@@ -8,5 +8,11 @@ import java.util.List;
 public interface MessageProtocolContext {
 
     List<MemberProxy> getMemberProxies(Class<?> clazz);
-    TypeAdapter getTypeAdapter(MemberProxy proxy);
+    /**
+     * get the type adapter for base types. like primitive types with its' wrapper and
+     * string type.
+     * @param Clazz the base types
+     * @return the type adapter of 'Basic' type.
+     */
+    TypeAdapter getBaseTypeAdapter(Class<?> Clazz);
 }

@@ -1,7 +1,7 @@
-package com.heaven7.java.message.protocol;
+package com.heaven7.java.message.protocol.internal;
 
+import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.anno.MethodMember;
-import com.heaven7.java.message.protocol.internal.MUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,20 +10,19 @@ import java.lang.reflect.Method;
  * the method proxy
  * @author heaven7
  */
-/*public*/ class MethodProxy extends BaseMemberProxy implements MemberProxy {
+public class MethodProxy extends BaseMemberProxy implements MemberProxy {
 
     private final Method get;
     private final Method set;
     private final int priority;
-    private final int type;
     private final String property;
 
     //method param count: must be one ,and must support message protocol.
-    public MethodProxy(Method get, Method set) {
+    public MethodProxy(Class<?> ownerClass,Method get, Method set) {
+        super(ownerClass, get.getGenericReturnType());
         this.get = get;
         this.set = set;
         this.priority = get.getAnnotation(MethodMember.class).priority();
-        this.type = parseType(get.getReturnType());
         this.property = MUtils.getPropertyFromMethod(get);
     }
 
@@ -32,14 +31,9 @@ import java.lang.reflect.Method;
         return priority;
     }
     @Override
-    public int getType() {
-        return type;
-    }
-    @Override
     public String getPropertyName() {
         return property;
     }
-
     @Override
     public void setObject(Object obj, Object value) throws IllegalAccessException, InvocationTargetException {
         set.invoke(obj, value);

@@ -1,5 +1,6 @@
 package com.heaven7.java.message.protocol;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
@@ -16,4 +17,10 @@ public interface TypeAdapterContext {
 
     //name is class name
     Collection createCollection(String name);
+
+    boolean isMap(Class<?> rawType);
+
+    void registerTypeAdapter(Type type, TypeAdapter adapter);
+
+    TypeAdapter getTypeAdapter(Type type);
 }

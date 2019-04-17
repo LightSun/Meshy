@@ -1,11 +1,16 @@
 package com.heaven7.java.message.protocol.internal;
 
 import com.heaven7.java.base.util.Predicates;
+import com.heaven7.java.message.protocol.MessageProtocolContext;
+import com.heaven7.java.message.protocol.TypeAdapter;
+import com.heaven7.java.message.protocol.TypeAdapterContext;
+import com.heaven7.java.message.protocol.adapter.ArrayTypeAdapter;
+import com.heaven7.java.message.protocol.adapter.CollectionTypeAdapter;
+import com.heaven7.java.message.protocol.adapter.MapTypeAdapter;
+import com.heaven7.java.message.protocol.adapter.ObjectTypeAdapter;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * @author heaven7
@@ -16,18 +21,18 @@ public class $MPTypes {
 
     /**
      * parse the class as generic node.
-     * @param clazz the owner class
-     * @param type the type of field/method
+     * @param ownerClass the owner class
+     * @param type the generic type of field/method
      * @param parent the node to populate
      */
-    public static void parseNode(final Class clazz, Type type, GenericNode parent) {
+    public static void parseNode(final Class ownerClass, Type type, GenericNode parent) {
         if(type instanceof ParameterizedType){
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
             List<GenericNode> subs = new ArrayList<>();
             GenericNode node;
             for (Type t : types){
                 node = new GenericNode();
-                parseNode(clazz, t,  node);
+                parseNode(ownerClass, t,  node);
                 subs.add(node);
             }
             parent.type = (Class<?>) ((ParameterizedType) type).getRawType();
@@ -36,21 +41,21 @@ public class $MPTypes {
             Type componentType = ((GenericArrayType) type).getGenericComponentType();
             parent.isArray = true;
             GenericNode node = new GenericNode();
-            parseNode(clazz, componentType,  node);
+            parseNode(ownerClass, componentType,  node);
             parent.addNode(node);
         }else if(type instanceof WildcardType){
             Type[] lowerBounds = ((WildcardType) type).getLowerBounds();
             Type[] upperBounds = ((WildcardType) type).getUpperBounds();
             if(Predicates.isEmpty(lowerBounds)){
-                parseNode(clazz, upperBounds[0],  parent);
+                parseNode(ownerClass, upperBounds[0],  parent);
             }else {
-                parseNode(clazz, lowerBounds[0], parent);
+                parseNode(ownerClass, lowerBounds[0], parent);
             }
         }else if(type instanceof TypeVariable){
             //indicates  Wildcard from object. that means only can be known as runtime.
             String name = ((TypeVariable) type).getName();
-            if(sTypeVars.get(clazz) == null){
-                ParameterizedType pt = (ParameterizedType) clazz.getGenericSuperclass();
+            if(sTypeVars.get(ownerClass) == null){
+                ParameterizedType pt = (ParameterizedType) ownerClass.getGenericSuperclass();
                 if(pt == null){
                     throw new UnsupportedOperationException("must extend the generic super class");
                 }
@@ -59,12 +64,12 @@ public class $MPTypes {
                 Type[] tts = pt.getActualTypeArguments();
                 for (int i = 0 , size = tts.length ; i < size ; i ++){
                     GenericNode node = new GenericNode();
-                    parseNode(clazz, tts[i], node);
+                    parseNode(ownerClass, tts[i], node);
                     pairs.add(new TypeVariablePair(types[i].getName(), node));
                 }
-                sTypeVars.put(clazz, pairs);
+                sTypeVars.put(ownerClass, pairs);
             }
-            TypeVariablePair pair = getTypeVariablePair(clazz, name);
+            TypeVariablePair pair = getTypeVariablePair(ownerClass, name);
             parent.addTypeVariablePair(pair);
         } else if(type instanceof Class){
             parent.type =(Class<?>) type;
@@ -104,6 +109,57 @@ public class $MPTypes {
             }
             pairs.add(pair);
         }
+        public Class<?> getTypeClass(int index) {
+            if(type != null){
+                return type;
+            }
+            if(isArray){
+                return Array.newInstance(subType.get(0).getTypeClass(0), 0).getClass();
+            }
+            return pairs.get(index).node.getTypeClass(0);
+        }
+        public GenericNode getSubNode(int index){
+            if(Predicates.isEmpty(subType)){
+                if(!Predicates.isEmpty(pairs)){
+                    return pairs.get(index).node;
+                }
+                return null;
+            }else {
+                return subType.get(index);
+            }
+        }
+        public TypeAdapter getTypeAdapter(MessageProtocolContext mpContext, TypeAdapterContext context, float applyVersion) {
+            if(isArray){
+                GenericNode subNode = getSubNode(0);
+                return new ArrayTypeAdapter(subNode.getTypeClass(0),
+                        subNode.getTypeAdapter(mpContext, context, applyVersion));
+            }
+            if(type != null){
+                //prefer dynamic register
+                TypeAdapter typeAdapter = context.getTypeAdapter(type);
+                if(typeAdapter != null){
+                    return typeAdapter;
+                }
+                //base types
+                TypeAdapter adapter = mpContext.getBaseTypeAdapter(type);
+                if(adapter != null){
+                    return adapter;
+                }
+                if(Collection.class.isAssignableFrom(type)){
+                    return new CollectionTypeAdapter(context,
+                            getSubNode(0).getTypeAdapter(mpContext, context, applyVersion));
+                }else if(Map.class.isAssignableFrom(type) || context.isMap(type)){
+                    return new MapTypeAdapter(context, getSubNode(0).getTypeAdapter(mpContext, context, applyVersion),
+                            getSubNode(1).getTypeAdapter(mpContext, context, applyVersion));
+                }else {
+                    return new ObjectTypeAdapter(context, applyVersion);
+                }
+            }else if(!Predicates.isEmpty(pairs)){
+                return pairs.get(0).node.getTypeAdapter(mpContext, context, applyVersion);
+            }else {
+                throw new UnsupportedOperationException("un-reach here");
+            }
+        }
     }
     public static class TypeVariablePair{
         public final String declareName;
@@ -112,6 +168,10 @@ public class $MPTypes {
             this.declareName = declareName;
             this.node = node;
         }
+    }
+    public static class TypeParameter{
+        public int type;
+        public boolean packed;
     }
 
 }

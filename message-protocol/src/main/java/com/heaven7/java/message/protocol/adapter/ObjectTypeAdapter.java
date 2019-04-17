@@ -2,29 +2,31 @@ package com.heaven7.java.message.protocol.adapter;
 
 import com.heaven7.java.message.protocol.*;
 import com.heaven7.java.message.protocol.internal.MUtils;
+import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.util.List;
 
 /**
+ * the object type adapter .support null.
  * @author heaven7
  */
-public class ObjectTypeAadpter extends TypeAdapter {
+public class ObjectTypeAdapter extends TypeAdapter {
 
-    private final MessageProtocolContext context;
+    private final MessageProtocolContext mMPContext = SimpleMessageProtocolContext.getDefault();
+    private final TypeAdapterContext context;
     private final float version;
 
-    public ObjectTypeAadpter(MessageProtocolContext context, float applyVersion) {
+    public ObjectTypeAdapter(TypeAdapterContext context, float applyVersion) {
         this.context = context;
         this.version = applyVersion;
     }
 
-    private List<MemberProxy> getMemberProxies(Class<?> type){
-        return context.getMemberProxies(type);
+    private List<MemberProxy> getMemberProxies(Class<?> clazz){
+        return mMPContext.getMemberProxies(clazz);
     }
 
     @Override
@@ -42,9 +44,6 @@ public class ObjectTypeAadpter extends TypeAdapter {
             Class<?> targetClass;   //target class to find member proxy.
             //target version > < = local version
             String name = MessageConfigManager.getRepresentClassName(rawClass);
-            if(name == null){
-                name = rawClass.getName();
-            }
 
             float localVersion = MessageConfigManager.getVersion();
             if(localVersion != version){
@@ -71,18 +70,11 @@ public class ObjectTypeAadpter extends TypeAdapter {
             // write data.
             List<MemberProxy> proxies = getMemberProxies(targetClass);
             for (MemberProxy proxy : proxies) {
-                if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
-                    len += write(sink, proxy.getObject(obj));
-                } else {
-                    TypeAdapter adapter = context.getTypeAdapter(proxy);
-                    if (adapter == null) {
-                        throw new UnsupportedOperationException(
-                                "un-register type adapter. type = " + proxy.getType());
-                    }
-                    len += adapter.write(sink, proxy.getObject(obj));
-                }
+               // System.out.println("write >>> object:  propName = " + proxy.getPropertyName());
+                TypeAdapter adapter = proxy.getTypeAdapter(mMPContext, context, version);
+                len += adapter.write(sink, proxy.getObject(obj));
             }
-        } catch ( ClassNotFoundException | IllegalAccessException | IOException | InvocationTargetException e) {
+        } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
             throw new MessageException(e);
         }
         return len;
@@ -105,25 +97,15 @@ public class ObjectTypeAadpter extends TypeAdapter {
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
             for (MemberProxy proxy : proxies) {
-                if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
-                    Object obj2 = read(source);
-                    proxy.setObject(obj, obj2);
-                } else {
-                    TypeAdapter adapter = context.getTypeAdapter(proxy);
-                    if (adapter == null) {
-                        throw new UnsupportedOperationException(
-                                "un-register type adapter. type = " + proxy.getType());
-                    }
-                    Object value = adapter.read(source);
-                    proxy.setObject(obj, value);
-                }
+                TypeAdapter adapter = proxy.getTypeAdapter(mMPContext, context, version);
+                Object value = adapter.read(source);
+                proxy.setObject(obj, value);
             }
             return obj;
         } catch (ClassNotFoundException
                 | IllegalAccessException
                 | InstantiationException
-                | InvocationTargetException
-                | IOException e) {
+                | InvocationTargetException e) {
             throw new MessageException(e);
         }
     }
@@ -141,9 +123,6 @@ public class ObjectTypeAadpter extends TypeAdapter {
             Class<?> targetClass;   //target class to find member proxy.
             //target version > < = local version
             String name = MessageConfigManager.getRepresentClassName(rawClass);
-            if(name == null){
-                name = rawClass.getName();
-            }
 
             float localVersion = MessageConfigManager.getVersion();
             if(localVersion != version){
@@ -168,16 +147,8 @@ public class ObjectTypeAadpter extends TypeAdapter {
             // write data.
             List<MemberProxy> proxies = getMemberProxies(targetClass);
             for (MemberProxy proxy : proxies) {
-                if (proxy.getType() == MemberProxy.TYPE_OBJECT) {
-                    len += evaluateSize(proxy.getObject(obj));
-                } else {
-                    TypeAdapter adapter = context.getTypeAdapter(proxy);
-                    if (adapter == null) {
-                        throw new UnsupportedOperationException(
-                                "un-register type adapter. type = " + proxy.getType());
-                    }
-                    len += adapter.evaluateSize(proxy.getObject(obj));
-                }
+                TypeAdapter adapter = proxy.getTypeAdapter(mMPContext, context, version);
+                len += adapter.evaluateSize(proxy.getObject(obj));
             }
         } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
             throw new MessageException(e);

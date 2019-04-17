@@ -19,9 +19,10 @@ public final class MessageConfigManager {
         }
     };
     //-------------------------
-    private static volatile MessageConfig sConfig;
     private static final SparseArrayDelegate<MessageSecureWrapper> sSecureWrappers;
     private static final WeakHashMap<Class<?>, String> sRepresentMap;
+    private static volatile MessageConfig sConfig;
+    private static TypeAdapterContext sContext;
 
     static {
         sSecureWrappers = SparseFactory.newSparseArray(5);
@@ -88,6 +89,13 @@ public final class MessageConfigManager {
         }
     }
 
+    public static TypeAdapterContext getTypeAdapterContext(){
+        if(sContext == null){
+            sContext = new WrappedTypeAdapterContext(sConfig.context);
+        }
+        return sContext;
+    }
+
     /**
      * get message secure for target type
      * @param type the secure type for encode and decode
@@ -106,7 +114,6 @@ public final class MessageConfigManager {
         }
         throw new ConfigException("you must config the message secure for type = " + type);
     }
-
     /**
      * sign the message
      * @param data the data to signature

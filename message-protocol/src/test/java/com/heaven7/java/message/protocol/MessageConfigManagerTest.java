@@ -65,6 +65,7 @@ public class MessageConfigManagerTest {
                 SingleRSAMessageSecure.class.getName(), pubKey, String.valueOf(false)));
         config.secures.put(TYPE_RSA, MessageSecureFactory.createMessageSecure(
                 RSAMessageSecure.class.getName(), pubKey, priKey));
+        config.context = new BaseTypeAdapterContext();
 
         List<MessageConfig.Pair<Class<?>, Float>> list = new ArrayList<>();
         list.add(new MessageConfig.Pair<>(Person.class, LOW_VERSION));

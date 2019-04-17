@@ -46,4 +46,5 @@ public class MessageIOTest2 extends MessageIOTest{
     public Object getEqualsEntity() {
         return expectEntity;
     }
+
 }

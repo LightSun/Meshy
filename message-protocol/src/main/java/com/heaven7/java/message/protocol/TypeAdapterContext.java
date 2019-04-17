@@ -10,6 +10,13 @@ import java.util.Map;
 public interface TypeAdapterContext {
 
     /**
+     * create object for target class
+     * @param clazz the clazz
+     * @return the object
+     */
+    Object newInstance(Class<?> clazz);
+
+    /**
      * create map from target 'Map' class. eg: {@linkplain com.heaven7.java.base.util.SparseArray}.
      * @param name the class name of 'Map'
      * @return the map

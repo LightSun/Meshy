@@ -51,7 +51,7 @@ public class ObjectTypeAdapter extends TypeAdapter {
                 //target class is a new class.
                 if(!targetClass.isAssignableFrom(rawClass)){
                     try {
-                        Object obj2 = targetClass.newInstance();
+                        Object obj2 = context.newInstance(targetClass);
                         MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
                                 getMemberProxies(targetClass));
                         obj = obj2;
@@ -93,7 +93,7 @@ public class ObjectTypeAdapter extends TypeAdapter {
             Class<?> clazz;
             clazz = MessageConfigManager.getCompatClass(fullName,
                     Math.min(version, MessageConfigManager.getVersion()));
-            Object obj = clazz.newInstance();
+            Object obj = context.newInstance(clazz);
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
             for (MemberProxy proxy : proxies) {
@@ -104,7 +104,7 @@ public class ObjectTypeAdapter extends TypeAdapter {
             return obj;
         } catch (ClassNotFoundException
                 | IllegalAccessException
-                | InstantiationException
+                | NullPointerException
                 | InvocationTargetException e) {
             throw new MessageException(e);
         }
@@ -130,7 +130,7 @@ public class ObjectTypeAdapter extends TypeAdapter {
                 //target class is a new class.
                 if(!targetClass.isAssignableFrom(rawClass)){
                     try {
-                        Object obj2 = targetClass.newInstance();
+                        Object obj2 = context.newInstance(targetClass);
                         MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
                                 getMemberProxies(targetClass));
                         obj = obj2;

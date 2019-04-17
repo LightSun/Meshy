@@ -16,6 +16,15 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
     private final HashMap<Type, TypeAdapter> mMap = new HashMap<>();
 
     @Override
+    public Object newInstance(Class<?> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
     public Map createMap(String name) {
         try {
             Class<?> clazz = Class.forName(name);

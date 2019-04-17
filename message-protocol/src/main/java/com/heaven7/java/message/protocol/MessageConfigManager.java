@@ -160,7 +160,13 @@ public final class MessageConfigManager {
         WrappedTypeAdapterContext(TypeAdapterContext base) {
             this.base = base;
         }
-        @Override
+
+       @Override
+       public Object newInstance(Class<?> clazz) {
+           return base.newInstance(clazz);
+       }
+
+       @Override
         public Map createMap(String name) {
             Map map = base.createMap(name);
             if(map != null){

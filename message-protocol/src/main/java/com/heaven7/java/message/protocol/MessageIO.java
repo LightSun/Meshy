@@ -302,14 +302,14 @@ public final class MessageIO {
         return len;
     }
 
-    private static TypeAdapter getTypeAdapter(MemberProxy proxy) {
+    /*private*/ static TypeAdapter getTypeAdapter(MemberProxy proxy) {
         if (proxy.isPackedType()) {
             return sPackAdapters.get(proxy.getType());
         }
         return sTypeAdapters.get(proxy.getType());
     }
 
-    private static List<MemberProxy> getMemberProxies(Class<?> clazz) {
+    /*private*/ static List<MemberProxy> getMemberProxies(Class<?> clazz) {
         List<MemberProxy> proxies = sCache.get(clazz);
         if (proxies == null) {
             proxies = getMemberProxies0(clazz);

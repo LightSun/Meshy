@@ -88,9 +88,4 @@ import java.lang.reflect.Type;
         this.mNode = node;
         this.mOwnerClass = ownerClass;
     }
-
-    public static void main(String[] args) {
-        System.out.println(1 + 1 << 8);
-        System.out.println(3 + 1 << 8);
-    }
 }

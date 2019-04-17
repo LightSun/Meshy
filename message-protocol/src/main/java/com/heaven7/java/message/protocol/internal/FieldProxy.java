@@ -2,7 +2,6 @@ package com.heaven7.java.message.protocol.internal;
 
 import com.heaven7.java.base.anno.Nullable;
 import com.heaven7.java.message.protocol.MemberProxy;
-import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.anno.FieldMember;
 
 import java.lang.reflect.Field;

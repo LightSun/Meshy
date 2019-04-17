@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
  * the field proxy
  * @author heaven7
  */
-public class FieldProxy extends BaseMemberProxy implements MemberProxy {
+/*public*/ class FieldProxy extends BaseMemberProxy implements MemberProxy {
 
     private final Field field;
     private int priority;

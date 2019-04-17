@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * the method proxy
  * @author heaven7
  */
-public class MethodProxy extends BaseMemberProxy implements MemberProxy {
+/*public*/ class MethodProxy extends BaseMemberProxy implements MemberProxy {
 
     private final Method get;
     private final Method set;

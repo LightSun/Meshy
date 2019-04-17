@@ -137,7 +137,7 @@ public class $MPTypes {
             if(type != null){
                 //prefer dynamic register
                 TypeAdapter typeAdapter = context.getTypeAdapter(type);
-                if(typeAdapter != null){
+                if(typeAdapter != null){ //TODO change to node
                     return typeAdapter;
                 }
                 //base types
@@ -169,9 +169,4 @@ public class $MPTypes {
             this.node = node;
         }
     }
-    public static class TypeParameter{
-        public int type;
-        public boolean packed;
-    }
-
 }

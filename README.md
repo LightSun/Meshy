@@ -1,16 +1,16 @@
 # Message-Protocol
 the general message protocal of 'CS'. use byte stream to read and write message with 'Encryption/Decrypt'.
 
-## Message Protocol
+# Message Protocol
 
-### total message Protocol
+## total message Protocol
 | Version  | Signature | EncodeType |           Encoded-Data | 
 | :----------- | ----: | :--------- | --------------: |
-### detail message protocol(after decode)
+## detail message protocol(after decode)
 | Message-Type  | String-Message | Any-Object |    
 | :----------- | ----: | :--------- |
 
-## Features
+# Features
 - 1, support the all base types of java , include their wrapper types.
 also support String, collection,Map and self types...etc.
   - byte, short,int,long, float,double,char,boolean and wrappers.

@@ -1,5 +1,14 @@
-# message-protocol
+# Message-Protocol
 the general message protocal of 'CS'. use byte stream to read and write message with 'Encryption/Decrypt'.
+
+## Message Formst
+
+- The total message Format is .
+| Version  | Signature | EncodeType |           Encoded-Data | 
+| :----------- | ----: | :--------- | --------------: |
+- The real message format is .(after decode)
+| Message-Type  | String-Message | Any-Object |    
+| :----------- | ----: | :--------- |
 
 ## Features
 - 1, support the all base types of java , include their wrapper types.

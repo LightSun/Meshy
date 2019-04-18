@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-public class BaseAdapterTest<T> {
+public abstract class BaseAdapterTest<T> {
 
     private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private final TypeAdapter mAdapter;

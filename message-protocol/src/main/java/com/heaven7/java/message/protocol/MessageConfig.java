@@ -50,6 +50,7 @@ public class MessageConfig {
         MessageConfig config = new MessageConfig();
         config.compatMap = new HashMap<>();
         config.secures = SparseFactory.newSparseArray(5);
+        config.context = new BaseTypeAdapterContext();
         return config;
     }
 

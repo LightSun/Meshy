@@ -199,11 +199,9 @@ public final class $MPTypes {
             }else {
                 throw new UnsupportedOperationException("un-reach here");
             }
-
-
         }
     }
-    public static class TypeVariablePair{
+    private static class TypeVariablePair{
         public final String declareName;
         public final GenericNode node;
         public TypeVariablePair(String declareName, GenericNode node) {

@@ -15,6 +15,11 @@ import java.lang.reflect.Type;
     private final Class<?> mOwnerClass;
     private final TypeNode mNode;
 
+    public BaseMemberProxy(Class<?> ownerClass, Type genericType) {
+        this.mNode = $MPTypes.getTypeNode(ownerClass, genericType);
+        this.mOwnerClass = ownerClass;
+    }
+
     @Override
     public Class<?> getOwnerClass() {
         return mOwnerClass;
@@ -29,6 +34,7 @@ import java.lang.reflect.Type;
     public static int getFlags(int value){
         return (value & TYPE_FLAG_MASK ) >> 8;
     }
+
     public static int parseType(Class<?> clazz){
         if(clazz == byte.class){
             return MemberProxy.TYPE_BYTE;
@@ -77,10 +83,5 @@ import java.lang.reflect.Type;
         }else {
             return -1;
         }
-    }
-
-    public BaseMemberProxy(Class<?> ownerClass, Type genericType) {
-        this.mNode = $MPTypes.getTypeNode(ownerClass, genericType);
-        this.mOwnerClass = ownerClass;
     }
 }

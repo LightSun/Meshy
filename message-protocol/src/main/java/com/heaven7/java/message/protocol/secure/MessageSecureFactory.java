@@ -39,7 +39,10 @@ public final class MessageSecureFactory {
             }else {
                 throw new MessageConfigManager.ConfigException("param count error.");
             }
-        }else {
+        }else if(clazz == UnsafeMessageSecure.class){
+            return UnsafeMessageSecure.INSTANCE;
+        }
+        else {
             throw new MessageConfigManager.ConfigException("unsupport Message Secure class = " + className);
         }
     }

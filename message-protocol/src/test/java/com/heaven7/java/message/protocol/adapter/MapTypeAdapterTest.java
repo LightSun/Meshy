@@ -20,7 +20,7 @@ public class MapTypeAdapterTest extends BaseAdapterTest<Map<Integer, TestEntity>
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(SimpleMessageProtocolContext.getDefault(),
+        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(
                 MessageConfigManager.getTypeAdapterContext(),
                 MessageConfigManager.getVersion());
         return new MapTypeAdapter(MessageConfigManager.getTypeAdapterContext(), new IntPackedAdapter(), componentTypeAdapter);

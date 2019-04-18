@@ -1,7 +1,5 @@
 package com.heaven7.java.message.protocol.reflect;
 
-//copied from google/gson
-
 import com.heaven7.java.base.util.$Types;
 import com.heaven7.java.base.util.Throwables;
 
@@ -12,7 +10,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/** <p> copied from 'google/gson' </p>
  * Represents a generic type {@code T}. Java doesn't yet provide a way to
  * represent generic types, so this class does. Forces clients to create a
  * subclass of this class which enables retrieval the type information even at

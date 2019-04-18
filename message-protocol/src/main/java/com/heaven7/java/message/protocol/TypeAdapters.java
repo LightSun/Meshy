@@ -10,27 +10,33 @@ import com.heaven7.java.message.protocol.reflect.TypeToken;
  * this is a helper class to create {@linkplain TypeAdapter}.
  * @author heaven7
  */
-public class TypeAdapters {
+public final class TypeAdapters {
 
     public static TypeAdapter ofTypeToken(TypeToken<?> tt){
         return ofTypeToken(tt, MessageConfigManager.getVersion());
     }
 
     public static TypeAdapter ofTypeToken(TypeToken<?> tt, float applyVersion){
-        $MPTypes.GenericNode node = new $MPTypes.GenericNode();
-        $MPTypes.parseNode(null, tt.getType(), node);
-        return node.getTypeAdapter(SimpleMessageProtocolContext.getDefault(),
+        return $MPTypes.getTypeNode(tt.getType()).getTypeAdapter( SimpleMessageProtocolContext.getDefault(),
                 MessageConfigManager.getTypeAdapterContext(), applyVersion);
     }
 
+    /**
+     * get the type adapter from target object. the object should be any object of self define.
+     * mus not be any collection or map.
+     * @param obj the object
+     * @param applyVersion the version to apply
+     * @return the type adapter
+     */
     public static TypeAdapter getTypeAdapter(@Nullable Object obj, float applyVersion){
         if(obj == null){
             return NullTypeAdapter.INSTANCE;
         }
         Class<?> clazz = obj.getClass();
-        $MPTypes.GenericNode node = new $MPTypes.GenericNode();
-        $MPTypes.parseNode(clazz, clazz, node);
-        return node.getTypeAdapter(SimpleMessageProtocolContext.getDefault(),
-                MessageConfigManager.getTypeAdapterContext(), applyVersion);
+        return $MPTypes.getTypeNode(clazz, clazz).getTypeAdapter(
+                SimpleMessageProtocolContext.getDefault(),
+                MessageConfigManager.getTypeAdapterContext(),
+                applyVersion);
+
     }
 }

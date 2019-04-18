@@ -3,6 +3,7 @@ package com.heaven7.java.message.protocol;
 import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
+import com.heaven7.java.message.protocol.util.Pair;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -12,10 +13,10 @@ import java.util.*;
  */
 public final class MessageConfigManager {
 
-    private static final Comparator<MessageConfig.Pair<Class<?>, Float>> sCompatComparator =
-            new Comparator<MessageConfig.Pair<Class<?>, Float>>() {
+    private static final Comparator<Pair<Class<?>, Float>> sCompatComparator =
+            new Comparator<Pair<Class<?>, Float>>() {
         @Override
-        public int compare(MessageConfig.Pair<Class<?>, Float> o1, MessageConfig.Pair<Class<?>, Float> o2) {
+        public int compare(Pair<Class<?>, Float> o1, Pair<Class<?>, Float> o2) {
             return Float.compare(o1.value, o2.value);
         }
     };
@@ -48,10 +49,10 @@ public final class MessageConfigManager {
             sSecureWrappers.clear();
         }
         sConfig = config;
-        for (Map.Entry<String, List<MessageConfig.Pair<Class<?>, Float>>> en : config.compatMap.entrySet()){
+        for (Map.Entry<String, List<Pair<Class<?>, Float>>> en : config.compatMap.entrySet()){
             Collections.sort(en.getValue(), sCompatComparator); //AESC
             final String className = en.getKey();
-            for (MessageConfig.Pair<Class<?>, Float> pair : en.getValue()){
+            for (Pair<Class<?>, Float> pair : en.getValue()){
                 sRepresentMap.put(pair.key, className);
             }
         }
@@ -65,11 +66,11 @@ public final class MessageConfigManager {
      * @throws ClassNotFoundException if {@linkplain Class#forName(String)} occurs
      */
     public static Class<?> getCompatClass(String className, float version) throws ClassNotFoundException {
-        List<MessageConfig.Pair<Class<?>, Float>> pairs = sConfig.compatMap.get(className);
+        List<Pair<Class<?>, Float>> pairs = sConfig.compatMap.get(className);
         if(Predicates.isEmpty(pairs)){
             return Class.forName(className);
         }
-        for (MessageConfig.Pair<Class<?>, Float> pair : pairs){
+        for (Pair<Class<?>, Float> pair : pairs){
             if(pair.value >= version){
                 return pair.key;
             }
@@ -91,6 +92,9 @@ public final class MessageConfigManager {
     }
 
     public static TypeAdapterContext getTypeAdapterContext(){
+        if(sConfig == null){
+            throw new ConfigException("you must call 'initialize(MessageConfig config)' method to initialize configuration !");
+        }
         if(sContext == null){
             sContext = new WrappedTypeAdapterContext(sConfig.context);
         }
@@ -191,14 +195,15 @@ public final class MessageConfigManager {
         public boolean isMap(Class<?> rawType) {
             return base.isMap(rawType);
         }
-        @Override
-        public void registerTypeAdapter(Type type, TypeAdapter adapter) {
-            base.registerTypeAdapter(type, adapter);
-        }
-        @Override
-        public TypeAdapter getTypeAdapter(Type type) {
-            return base.getTypeAdapter(type);
-        }
+
+       @Override
+       public void putTypeAdapter(Type type, float version, TypeAdapter adapter) {
+           base.putTypeAdapter(type, version, adapter);
+       }
+       @Override
+       public TypeAdapter getTypeAdapter(TypeNode type, float expectVersion) {
+           return base.getTypeAdapter(type, expectVersion);
+       }
     }
 
 

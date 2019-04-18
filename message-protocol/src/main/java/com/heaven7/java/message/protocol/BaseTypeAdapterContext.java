@@ -1,19 +1,22 @@
 package com.heaven7.java.message.protocol;
 
-import com.heaven7.java.base.util.SparseArray;
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
+import com.heaven7.java.message.protocol.internal.$MPTypes;
+import com.heaven7.java.message.protocol.util.Pair;
 
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author heaven7
  */
 public class BaseTypeAdapterContext implements TypeAdapterContext {
 
-    private final HashMap<Type, TypeAdapter> mMap = new HashMap<>();
+    private final HashMap<TypeNode, Pair<Float,TypeAdapter>> mMap = new HashMap<>();
 
     @Override
     public Object newInstance(Class<?> clazz) {
@@ -67,8 +70,18 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
                 return new LinkedList();
             }else if(Vector.class.isAssignableFrom(clazz)){
                 return new Vector();
-            }else if(List.class.isAssignableFrom(clazz)){
+            }else if(CopyOnWriteArrayList.class.isAssignableFrom(clazz)){
+                return new CopyOnWriteArrayList();
+            }
+            else if(List.class.isAssignableFrom(clazz)){
                 return new ArrayList();
+            }else if(CopyOnWriteArraySet.class.isAssignableFrom(clazz)){
+                return new CopyOnWriteArraySet();
+            }
+            else if(SortedSet.class.isAssignableFrom(clazz)){
+                return new TreeSet();
+            }else if(Set.class.isAssignableFrom(clazz)){
+                return new HashSet();
             }
         } catch (ClassNotFoundException e) {
            // e.printStackTrace();
@@ -81,12 +94,18 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
     }
 
     @Override
-    public void registerTypeAdapter(Type type, TypeAdapter adapter) {
-        mMap.put(type, adapter);
+    public final void putTypeAdapter(Type type, float version, TypeAdapter adapter) {
+        TypeNode node = $MPTypes.getTypeNode(type);
+        mMap.put(node, new Pair<>(version, adapter));
     }
+
     @Override
-    public TypeAdapter getTypeAdapter(Type type) {
-        return mMap.get(type);
+    public final TypeAdapter getTypeAdapter(TypeNode type, float expectVersion) {
+        Pair<Float, TypeAdapter> pair = mMap.get(type);
+        if(pair != null && expectVersion >= pair.key){
+            return pair.value;
+        }
+        return null;
     }
 
     private static class SparseArrayMap<V> implements Map<Integer,V>, Wrapper<SparseArrayDelegate<V>>{

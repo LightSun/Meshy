@@ -4,7 +4,6 @@ import com.heaven7.java.base.anno.NonNull;
 import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.base.util.Throwables;
 import com.heaven7.java.message.protocol.adapter.ObjectTypeAdapter;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 import okio.BufferedSink;
 import okio.BufferedSource;
 
@@ -122,8 +121,7 @@ public final class MessageIO {
      */
     @SuppressWarnings("unchecked")
     public static <T> Message<T> readMessage(BufferedSource source, float version) {
-        return readMessage(source, new ObjectTypeAdapter(SimpleMessageProtocolContext.getDefault(),
-                MessageConfigManager.getTypeAdapterContext(), version));
+        return readMessage(source, new ObjectTypeAdapter(MessageConfigManager.getTypeAdapterContext(), version));
     }
     /**
      * read message from the source

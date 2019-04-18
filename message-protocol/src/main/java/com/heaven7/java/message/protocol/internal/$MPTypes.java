@@ -4,6 +4,7 @@ import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.message.protocol.MessageProtocolContext;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.TypeAdapterContext;
+import com.heaven7.java.message.protocol.TypeNode;
 import com.heaven7.java.message.protocol.adapter.ArrayTypeAdapter;
 import com.heaven7.java.message.protocol.adapter.CollectionTypeAdapter;
 import com.heaven7.java.message.protocol.adapter.MapTypeAdapter;
@@ -15,17 +16,27 @@ import java.util.*;
 /**
  * @author heaven7
  */
-public class $MPTypes {
+public final class $MPTypes {
 
     private static WeakHashMap<Class<?>, List<TypeVariablePair>> sTypeVars = new WeakHashMap<>();
 
+    public static TypeNode getTypeNode(Type type){
+        $MPTypes.GenericNode node = new $MPTypes.GenericNode();
+        $MPTypes.parseNode(null, type, node);
+        return node;
+    }
+    public static TypeNode getTypeNode(Class ownerClass, Type type){
+        $MPTypes.GenericNode node = new $MPTypes.GenericNode();
+        $MPTypes.parseNode(ownerClass, type, node);
+        return node;
+    }
     /**
      * parse the class as generic node.
      * @param ownerClass the owner class
      * @param type the generic type of field/method
      * @param parent the node to populate
      */
-    public static void parseNode(final Class ownerClass, Type type, GenericNode parent) {
+    private static void parseNode(final Class ownerClass, Type type, GenericNode parent) {
         if(type instanceof ParameterizedType){
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
             List<GenericNode> subs = new ArrayList<>();
@@ -70,7 +81,12 @@ public class $MPTypes {
                 sTypeVars.put(ownerClass, pairs);
             }
             TypeVariablePair pair = getTypeVariablePair(ownerClass, name);
-            parent.addTypeVariablePair(pair);
+            if(pair != null){
+                parent.addVariableNode(pair.node);
+            }else {
+                throw new UnsupportedOperationException("can't find TypeVariablePair for "
+                        + name + " ,from class " + ownerClass.getName());
+            }
         } else if(type instanceof Class){
             Class<?> clazz = (Class<?>) type;
             if(clazz.isArray()){
@@ -99,9 +115,9 @@ public class $MPTypes {
         return null;
     }
 
-    public static class GenericNode{
+    private static class GenericNode implements TypeNode {
         public Class<?> type;
-        public List<TypeVariablePair> pairs;
+        public List<GenericNode> varNodes; //for variable nodes
         public List<GenericNode> subType;
         public boolean isArray;
 
@@ -111,11 +127,11 @@ public class $MPTypes {
             }
             subType.add(node);
         }
-        public void addTypeVariablePair(TypeVariablePair pair){
-            if(pairs == null){
-                pairs = new ArrayList<>();
+        public void addVariableNode(GenericNode varNode){
+            if(varNodes == null){
+                varNodes = new ArrayList<>();
             }
-            pairs.add(pair);
+            varNodes.add(varNode);
         }
         public Class<?> getTypeClass(int index) {
             if(type != null){
@@ -124,18 +140,35 @@ public class $MPTypes {
             if(isArray){
                 return Array.newInstance(subType.get(0).getTypeClass(0), 0).getClass();
             }
-            return pairs.get(index).node.getTypeClass(0);
+            return varNodes.get(index).getTypeClass(0);
         }
         public GenericNode getSubNode(int index){
             if(Predicates.isEmpty(subType)){
-                if(!Predicates.isEmpty(pairs)){
-                    return pairs.get(index).node;
+                if(!Predicates.isEmpty(varNodes)){
+                    return varNodes.get(index);
                 }
                 return null;
             }else {
                 return subType.get(index);
             }
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            GenericNode node = (GenericNode) o;
+            return isArray == node.isArray &&
+                    Objects.equals(type, node.type) &&
+                    Objects.equals(varNodes, node.varNodes) &&
+                    Objects.equals(subType, node.subType);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, varNodes, subType, isArray);
+        }
+
         public TypeAdapter getTypeAdapter(MessageProtocolContext mpContext, TypeAdapterContext context, float applyVersion) {
             if(isArray){
                 GenericNode subNode = getSubNode(0);
@@ -143,8 +176,7 @@ public class $MPTypes {
                         subNode.getTypeAdapter(mpContext, context, applyVersion));
             }
             if(type != null){
-                //prefer dynamic register
-                TypeAdapter typeAdapter = context.getTypeAdapter(type);
+                TypeAdapter typeAdapter = context.getTypeAdapter(this, applyVersion);
                 if(typeAdapter != null){
                     return typeAdapter;
                 }
@@ -162,11 +194,13 @@ public class $MPTypes {
                 }else {
                     return new ObjectTypeAdapter(mpContext, context, applyVersion);
                 }
-            }else if(!Predicates.isEmpty(pairs)){
-                return pairs.get(0).node.getTypeAdapter(mpContext, context, applyVersion);
+            }else if(!Predicates.isEmpty(varNodes)){
+                return varNodes.get(0).getTypeAdapter(mpContext, context, applyVersion);
             }else {
                 throw new UnsupportedOperationException("un-reach here");
             }
+
+
         }
     }
     public static class TypeVariablePair{

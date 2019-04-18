@@ -4,7 +4,6 @@ import com.heaven7.java.message.protocol.MessageConfigManager;
 import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestEntity;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 
 /**
  * object type adapter use the {@linkplain com.heaven7.java.message.protocol.MessageConfigManager} so need init
@@ -18,7 +17,7 @@ public class ObjectTypeAdapterTest extends BaseAdapterTest<TestEntity>{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ObjectTypeAdapter(SimpleMessageProtocolContext.getDefault(),
+        return new ObjectTypeAdapter(
                 MessageConfigManager.getTypeAdapterContext(),
                 MessageConfigManager.getVersion());
     }

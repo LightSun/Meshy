@@ -1,6 +1,7 @@
 package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.base.util.IOUtils;
+import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -13,6 +14,10 @@ import java.security.GeneralSecurityException;
  * @author heaven7
  */
 public final class OkMessage {
+
+    public static MessageProtocolContext getDefaultMessageProtocolContext(){
+        return SimpleMessageProtocolContext.getDefault();
+    }
 
     /**
      * read message from input source. often from socket.

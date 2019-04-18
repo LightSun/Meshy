@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * test all base-types include string.
  */
-public class BaseTypeAdapterTests {
+public final class BaseTypeAdapterTests {
 
     private final List<BaseAdapterTest<?>> mTestLists = new ArrayList<>();
 

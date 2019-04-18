@@ -19,7 +19,7 @@ public class CollectionTypeAdapterTest extends BaseAdapterTest<List<TestEntity>>
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(SimpleMessageProtocolContext.getDefault(),
+        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(
                 MessageConfigManager.getTypeAdapterContext(),
                 MessageConfigManager.getVersion());
         return new CollectionTypeAdapter(MessageConfigManager.getTypeAdapterContext(), componentTypeAdapter);

@@ -8,6 +8,7 @@ import com.heaven7.java.message.protocol.secure.MessageSecureFactory;
 import com.heaven7.java.message.protocol.secure.RSAMessageSecure;
 import com.heaven7.java.message.protocol.secure.SingleRSAMessageSecure;
 import com.heaven7.java.message.protocol.signature.HMAC_SHA1Signature;
+import com.heaven7.java.message.protocol.util.Pair;
 import com.heaven7.java.message.protocol.util.RSACoder;
 import okio.Okio;
 import org.junit.Assert;
@@ -67,10 +68,10 @@ public class MessageConfigManagerTest {
                 RSAMessageSecure.class.getName(), pubKey, priKey));
         config.context = new BaseTypeAdapterContext();
 
-        List<MessageConfig.Pair<Class<?>, Float>> list = new ArrayList<>();
-        list.add(new MessageConfig.Pair<>(Person.class, LOW_VERSION));
-        list.add(new MessageConfig.Pair<>(Person2.class, HIGH_VERSION));
-        list.add(new MessageConfig.Pair<>(Person3.class, HIGH_2_VERSION));
+        List<Pair<Class<?>, Float>> list = new ArrayList<>();
+        list.add(new Pair<>(Person.class, LOW_VERSION));
+        list.add(new Pair<>(Person2.class, HIGH_VERSION));
+        list.add(new Pair<>(Person3.class, HIGH_2_VERSION));
         config.compatMap.put(Person.class.getName(), list);
         MessageConfigManager.initialize(config);
     }

@@ -25,6 +25,10 @@ public class ObjectTypeAdapter extends TypeAdapter {
         this.version = applyVersion;
     }
 
+    public ObjectTypeAdapter(TypeAdapterContext context, float applyVersion) {
+       this(OkMessage.getDefaultMessageProtocolContext(), context, applyVersion);
+    }
+
     private List<MemberProxy> getMemberProxies(Class<?> clazz){
         return mMPContext.getMemberProxies(clazz);
     }

@@ -1,9 +1,6 @@
 package com.heaven7.java.message.protocol.internal;
 
-import com.heaven7.java.message.protocol.MemberProxy;
-import com.heaven7.java.message.protocol.MessageProtocolContext;
-import com.heaven7.java.message.protocol.TypeAdapter;
-import com.heaven7.java.message.protocol.TypeAdapterContext;
+import com.heaven7.java.message.protocol.*;
 
 import java.lang.reflect.Type;
 
@@ -16,7 +13,7 @@ import java.lang.reflect.Type;
     private static final int TYPE_FLAG_MASK = 0xff00;
 
     private final Class<?> mOwnerClass;
-    private final $MPTypes.GenericNode mNode;
+    private final TypeNode mNode;
 
     @Override
     public Class<?> getOwnerClass() {
@@ -83,9 +80,7 @@ import java.lang.reflect.Type;
     }
 
     public BaseMemberProxy(Class<?> ownerClass, Type genericType) {
-        $MPTypes.GenericNode node = new $MPTypes.GenericNode();
-        $MPTypes.parseNode(ownerClass, genericType, node);
-        this.mNode = node;
+        this.mNode = $MPTypes.getTypeNode(ownerClass, genericType);
         this.mOwnerClass = ownerClass;
     }
 }

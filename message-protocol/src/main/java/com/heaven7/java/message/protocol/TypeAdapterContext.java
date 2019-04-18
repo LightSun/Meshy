@@ -1,5 +1,7 @@
 package com.heaven7.java.message.protocol;
 
+import com.heaven7.java.message.protocol.reflect.TypeToken;
+
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
@@ -45,7 +47,19 @@ public interface TypeAdapterContext {
      */
     boolean isMap(Class<?> rawType);
 
-    void registerTypeAdapter(Type type, TypeAdapter adapter);
+    /**
+     * register the type adapter
+     * @param type the type to apply can be used from {@linkplain TypeToken#getType()}.
+     * @param version the version to apply
+     * @param adapter the adapter.
+     */
+    void putTypeAdapter(Type type, float version, TypeAdapter adapter);
 
-    TypeAdapter getTypeAdapter(Type type);
+    /**
+     * get the type adapter
+     * @param type the type node
+     * @param expectVersion the expect version to used
+     * @return the type adapter if exist. or else null.
+     */
+    TypeAdapter getTypeAdapter(TypeNode type, float expectVersion);
 }

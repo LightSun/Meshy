@@ -15,7 +15,7 @@ public class ArrayTypeAdapterTest extends BaseAdapterTest<TestEntity[]> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(SimpleMessageProtocolContext.getDefault(),
+        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(
                 MessageConfigManager.getTypeAdapterContext(),
                 MessageConfigManager.getVersion());
         return new ArrayTypeAdapter(TestEntity.class, componentTypeAdapter);

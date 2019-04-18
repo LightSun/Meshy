@@ -1,12 +1,12 @@
 # Message-Protocol
 the general message protocal of 'CS'. use byte stream to read and write message with 'Encryption/Decrypt'.
 
-## Message Formst
+## Message Protocol
 
-- The total message Format is .
+### total message Protocol
 | Version  | Signature | EncodeType |           Encoded-Data | 
 | :----------- | ----: | :--------- | --------------: |
-- The real message format is .(after decode)
+### detail message protocol(after decode)
 | Message-Type  | String-Message | Any-Object |    
 | :----------- | ----: | :--------- |
 
@@ -17,7 +17,7 @@ also support String, collection,Map and self types...etc.
   - String, collection, Map, types.
   - ParameterizedType, GenericArrayType, WildcardType, TypeVariable, Class.
   - Self object type. 
-- 2, support message secure: Encryption/Decrypt, Signature.
+- 2, support double message secure: Encryption/Decrypt, Signature.
   - Encryption/Decrypt . 
   ```java
     byte[] data = {1,2,3};

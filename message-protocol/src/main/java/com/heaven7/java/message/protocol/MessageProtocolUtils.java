@@ -31,7 +31,11 @@ import java.security.GeneralSecurityException;
 /*public*/ final class MessageProtocolUtils {
 
     public static @Nullable MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
+        //peek the source to check data is all reached or not,
         BufferedSource peek = source.peek();
+        if(!peek.request(8)){
+            return null;
+        }
         peek.skip(4);
         final int totalLength = peek.readInt();
         //not all reached

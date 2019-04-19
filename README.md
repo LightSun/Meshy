@@ -2,7 +2,7 @@
 the general message protocal of 'CS'. use byte stream to read and write message with 'Encryption/Decrypt'.
 
 ### total message Protocol
-|Magic|totol-length| Version  | Signature | EncodeType |           Encoded-Data | 
+|Magic|total-length| Version  | Signature | EncodeType |           Encoded-Data | 
 | :----------- | ----:| :--------- | ----:| :--------- | --------------: |
 ### detail message protocol(after decode)
 | Message-Type  | String-Message | Any-Object |    

@@ -23,7 +23,7 @@ public final class OkMessage {
      * read message from input source. often from socket.
      * @param source the source as input to read
      * @param <T> the entity type
-     * @return the read message
+     * @return the readed message. if not all data reached return null.
      */
     public static <T> Message<T> readMessage(BufferedSource source){
         MessageProtocol protocal;

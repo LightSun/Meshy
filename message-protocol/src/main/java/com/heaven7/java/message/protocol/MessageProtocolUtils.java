@@ -16,7 +16,10 @@ import java.security.GeneralSecurityException;
     public static MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
         source.skip(4);
         final int totalLength = source.readInt();
-       // System.err.println("totalLength = " + totalLength);
+        //not all reached
+        if(!source.request(totalLength)){
+            return null;
+        }
 
         MessageProtocol protocal = new MessageProtocol();
         //version

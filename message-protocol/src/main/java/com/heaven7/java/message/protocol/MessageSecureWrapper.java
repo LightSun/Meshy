@@ -36,6 +36,10 @@ public final class MessageSecureWrapper {
 
     private final MessageSecure secure;
 
+    /**
+     * create wrapper by message secure
+     * @param secure the message secure
+     */
     public MessageSecureWrapper(MessageSecure secure) {
         this.secure = secure;
     }
@@ -43,6 +47,14 @@ public final class MessageSecureWrapper {
         return secure;
     }
 
+    /**
+     * encode the raw data and flush to the sink
+     * @param sink the out sink
+     * @param data the raw data to encode
+     * @return the real size as bytes count after encode
+     * @throws GeneralSecurityException if an secure exception occurs
+     * @throws IOException if write get an I/O error.
+     */
     public int encodeWithFlush(BufferedSink sink, byte[] data) throws GeneralSecurityException, IOException {
         int result = encode(sink, data);
         if(sink != null){
@@ -50,6 +62,15 @@ public final class MessageSecureWrapper {
         }
         return result;
     }
+
+    /**
+     * encode the raw data to the sink by {@linkplain MessageSecure}.
+     * @param sink the out sink
+     * @param data the raw data
+     * @return the size as bytes count after encode
+     * @throws GeneralSecurityException if throws
+     * @throws IOException if write out error
+     */
     public int encode(BufferedSink sink, byte[] data) throws GeneralSecurityException, IOException {
         int count = 0;
         int length = MessageConfigManager.getSegmentationPolicy().getSecureSegmentLength();
@@ -75,6 +96,13 @@ public final class MessageSecureWrapper {
         return count;
     }
 
+    /**
+     * decode the source and get the raw data
+     * @param source the source
+     * @return the decoded data
+     * @throws IOException if read error
+     * @throws GeneralSecurityException if decode occurs
+     */
     public byte[] decode(BufferedSource source) throws IOException, GeneralSecurityException {
         List<byte[]> list = new ArrayList<>();
         int total = 0;

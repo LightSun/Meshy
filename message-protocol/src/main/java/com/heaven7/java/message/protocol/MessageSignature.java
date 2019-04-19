@@ -17,9 +17,16 @@
 package com.heaven7.java.message.protocol;
 
 /**
+ * the message signature
  * @author heaven7
  */
 public interface MessageSignature {
 
+    /**
+     * sign the data
+     * @param data the data to sign
+     * @param key the key
+     * @return the signature value
+     */
     String signature(byte[] data, String key);
 }

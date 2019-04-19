@@ -17,11 +17,10 @@
 package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.base.anno.Nullable;
+import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
-import okio.Okio;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -79,25 +78,24 @@ import java.security.GeneralSecurityException;
 
     private static int writeMessageProtocol0(BufferedSink sink, Message<?> message,
                                              int encodeType, float version) throws IOException, GeneralSecurityException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message, version);
-        byte[] bufferBytes = buffer.toByteArray();
+        Buffer buffer = new Buffer();
+        int size = MessageIO.writeMessage(buffer, message, version);
+        byte[] bufferBytes = buffer.readByteArray();
+        assert size == bufferBytes.length;
         String sign = MessageConfigManager.signatureMessage(bufferBytes);
 
         //version- sign_len-sign-encode_type-encode_size
         int dataSize = 4 + 4 + sign.length() + 4;
         if (sink != null) {
-            ByteArrayOutputStream totalBuffer = new ByteArrayOutputStream();
-            BufferedSink tmpSink = Okio.buffer(Okio.sink(totalBuffer));
-            tmpSink.writeInt(Float.floatToIntBits(version));
-            tmpSink.writeInt(sign.length());
-            tmpSink.writeUtf8(sign);
-            tmpSink.writeInt(encodeType);
-            dataSize += MessageConfigManager.getMessageSecure(encodeType).encode(tmpSink, bufferBytes);
-            tmpSink.flush();
+            buffer.writeInt(Float.floatToIntBits(version));
+            buffer.writeInt(sign.length());
+            buffer.writeUtf8(sign);
+            buffer.writeInt(encodeType);
+            dataSize += MessageConfigManager.getMessageSecure(encodeType).encode(buffer, bufferBytes);
+            buffer.flush();
             sink.writeInt(MessageProtocol.MAGIC);
             sink.writeInt(dataSize);
-            sink.write(totalBuffer.toByteArray());
+            buffer.readAll(sink);
             sink.flush();
         } else {
             dataSize += MessageConfigManager.getMessageSecure(encodeType).encode(null, bufferBytes);

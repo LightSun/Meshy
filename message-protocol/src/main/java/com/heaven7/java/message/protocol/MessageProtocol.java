@@ -1,12 +1,14 @@
 package com.heaven7.java.message.protocol;
 
 /**
- * len,version,len,sign,en-type,len.all-data
+ * magic,total-len,version,len,sign,en-type,len.all-data
  *                                   msg
  *                                   type[login, logout, tick, normal],len,full-class-name,ds[len,value,len,value...]
  * @author heaven7
  */
 public class MessageProtocol {
+
+    public static final int MAGIC = 0x0053;  //12 + 15 + 7 + 4 + 0 + 21 + 4 + 13 + 7 = 83 (mpheaven7)
 
     private float version;
     private String sign;

@@ -13,7 +13,11 @@ import java.security.GeneralSecurityException;
  */
 /*public*/ final class MessageProtocolUtils {
 
-    public static MessageProtocol readMessageProtocol(BufferedSource source) throws IOException{
+    public static MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
+        source.skip(4);
+        final int totalLength = source.readInt();
+       // System.err.println("totalLength = " + totalLength);
+
         MessageProtocol protocal = new MessageProtocol();
         //version
         protocal.setVersion(Float.intBitsToFloat(source.readInt()));
@@ -27,40 +31,51 @@ import java.security.GeneralSecurityException;
         try {
             protocal.setDecodeData(MessageConfigManager.getMessageSecure(protocal.getEncodeType()).decode(source));
         } catch (GeneralSecurityException e) {
-           throw new RuntimeException("decode data error." , e);
+            throw new RuntimeException("decode data error.", e);
         }
         //handle sign
         String msg = MessageConfigManager.signatureMessage(protocal.getDecodeData());
-        if(!msg.equals(protocal.getSign())){
+        if (!msg.equals(protocal.getSign())) {
             throw new IllegalStateException("message sign error. local is " + msg + " ,remote is " + protocal.getSign());
         }
         return protocal;
     }
+
     public static int writeMessageProtocol(BufferedSink sink, Message<?> message,
-                                           int encodeType, float version) throws IOException, GeneralSecurityException{
+                                           int encodeType, float version) throws IOException, GeneralSecurityException {
         return writeMessageProtocol0(sink, message, encodeType, version);
     }
+
     public static int evaluateMessageProtocolSize(Message<?> message,
-                                                  int encodeType, float version) throws IOException, GeneralSecurityException{
+                                                  int encodeType, float version) throws IOException, GeneralSecurityException {
         return writeMessageProtocol0(null, message, encodeType, version);
     }
+
     private static int writeMessageProtocol0(BufferedSink sink, Message<?> message,
-                                             int encodeType, float version) throws IOException, GeneralSecurityException{
+                                             int encodeType, float version) throws IOException, GeneralSecurityException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         MessageIO.writeMessage(Okio.buffer(Okio.sink(buffer)), message, version);
         byte[] bufferBytes = buffer.toByteArray();
         String sign = MessageConfigManager.signatureMessage(bufferBytes);
+
+        //version- sign_len-sign-encode_type-encode_size
+        int dataSize = 4 + 4 + sign.length() + 4;
         if (sink != null) {
-              sink.writeInt(Float.floatToIntBits(version));
-              sink.writeInt(sign.length());
-              sink.writeUtf8(sign);
-              sink.writeInt(encodeType);
-        }
-        int encodeSize = MessageConfigManager.getMessageSecure(encodeType).encode(sink, bufferBytes);
-        //start write
-        if(sink != null){
+            ByteArrayOutputStream totalBuffer = new ByteArrayOutputStream();
+            BufferedSink tmpSink = Okio.buffer(Okio.sink(totalBuffer));
+            tmpSink.writeInt(Float.floatToIntBits(version));
+            tmpSink.writeInt(sign.length());
+            tmpSink.writeUtf8(sign);
+            tmpSink.writeInt(encodeType);
+            dataSize += MessageConfigManager.getMessageSecure(encodeType).encode(tmpSink, bufferBytes);
+            tmpSink.flush();
+            sink.writeInt(MessageProtocol.MAGIC);
+            sink.writeInt(dataSize);
+            sink.write(totalBuffer.toByteArray());
             sink.flush();
+        } else {
+            dataSize += MessageConfigManager.getMessageSecure(encodeType).encode(null, bufferBytes);
         }
-        return 4  + 4 + sign.length() + 4 + encodeSize;
+        return dataSize + 8; //magic +
     }
 }

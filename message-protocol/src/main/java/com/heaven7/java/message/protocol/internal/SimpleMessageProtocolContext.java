@@ -284,9 +284,4 @@ public class SimpleMessageProtocolContext implements MessageProtocolContext {
         return getTypeAdapter(acType, extra == MemberProxy.FLAG_PACKED);
     }
 
-    public static void main(String[] args) {
-        System.out.println(BaseMemberProxy.getType(512));
-    }
-
-
 }

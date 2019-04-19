@@ -1,13 +1,27 @@
+/*
+ * Copyright 2019
+ * heaven7(donshine723@gmail.com)
+
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.heaven7.java.message.protocol.internal;
 
-import com.heaven7.java.base.util.Platforms;
 import com.heaven7.java.base.util.TextUtils;
 import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.anno.MethodMember;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -15,31 +29,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author heaven7
  */
 public final class MUtils {
-
-   /* public static RuntimeException runtime(Exception e, Class<? extends RuntimeException> clazz, String msg){
-        if(clazz.isAssignableFrom(e.getClass())){
-            msg = e.getMessage() + Platforms.getNewLine() + msg;
-        }
-        Throwable cause = e.getCause() != null ? e.getCause() : e;
-        try{
-            return clazz.getConstructor(String.class, Throwable.class).newInstance(msg, cause);
-        }catch (Exception exp){
-            exp.printStackTrace(); //unexpect
-            if (e instanceof RuntimeException) {
-                return (RuntimeException) e;
-            }else{
-                throw new RuntimeException(msg, e);
-            }
-        }
-    }
-
-    public static RuntimeException runtime(Exception e){
-        if( e instanceof RuntimeException){
-            return (RuntimeException) e;
-        }else {
-            throw new RuntimeException(e);
-        }
-    }*/
 
     public static void copyProperties(Object from, Object to, List<MemberProxy> fromProxies, List<MemberProxy> toProxies)
             throws InvocationTargetException, IllegalAccessException {

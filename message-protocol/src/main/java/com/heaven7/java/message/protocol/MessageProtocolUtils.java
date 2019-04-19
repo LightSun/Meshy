@@ -14,12 +14,14 @@ import java.security.GeneralSecurityException;
 /*public*/ final class MessageProtocolUtils {
 
     public static MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
-        source.skip(4);
-        final int totalLength = source.readInt();
+        BufferedSource peek = source.peek();
+        peek.skip(4);
+        final int totalLength = peek.readInt();
         //not all reached
-        if(!source.request(totalLength)){
+        if(!peek.request(totalLength)){
             return null;
         }
+        source.skip(8);
 
         MessageProtocol protocal = new MessageProtocol();
         //version

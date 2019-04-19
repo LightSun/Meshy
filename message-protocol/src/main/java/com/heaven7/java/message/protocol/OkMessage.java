@@ -32,6 +32,10 @@ public final class OkMessage {
         } catch (IOException e) {
             throw new MessageException("format is error.", e);
         }
+        //since 1.0
+        if(protocal == null){
+            return null;
+        }
         BufferedSource src = Okio.buffer(Okio.source(new ByteArrayInputStream(protocal.getDecodeData())));
         try{
             return MessageIO.readMessage(src, protocal.getVersion());

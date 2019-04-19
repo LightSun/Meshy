@@ -1,5 +1,6 @@
 package com.heaven7.java.message.protocol;
 
+import com.heaven7.java.base.anno.Nullable;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
@@ -13,7 +14,7 @@ import java.security.GeneralSecurityException;
  */
 /*public*/ final class MessageProtocolUtils {
 
-    public static MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
+    public static @Nullable MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
         BufferedSource peek = source.peek();
         peek.skip(4);
         final int totalLength = peek.readInt();

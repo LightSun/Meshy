@@ -69,9 +69,9 @@ public class MessageConfigManagerTest {
         config.context = new BaseTypeAdapterContext();
 
         List<Pair<Class<?>, Float>> list = new ArrayList<>();
-        list.add(new Pair<>(Person.class, LOW_VERSION));
-        list.add(new Pair<>(Person2.class, HIGH_VERSION));
-        list.add(new Pair<>(Person3.class, HIGH_2_VERSION));
+        list.add(new Pair<Class<?>, Float>(Person.class, LOW_VERSION));
+        list.add(new Pair<Class<?>, Float>(Person2.class, HIGH_VERSION));
+        list.add(new Pair<Class<?>, Float>(Person3.class, HIGH_2_VERSION));
         config.compatMap.put(Person.class.getName(), list);
         MessageConfigManager.initialize(config);
     }

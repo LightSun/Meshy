@@ -69,10 +69,6 @@ public class OkMessageTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        // for compat entity, note this
-        // 1, 发送消息的俩端，和高版本的端的要兼容的class ，低版本的端必须要有
-        // 2, 高版本数据 发送给低版本，  序列化的对象一定要发送的是低版本的class.
-        // 3, 低版本数据 发送给高版本。  高版本找到低版本的class.来执行反序列化.
 
         String msg = "testCompatHighToLow";
         //sender object

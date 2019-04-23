@@ -49,7 +49,7 @@ public final class MessageIO {
      */
     public static int evaluateSize(Message<?> message, float applyVersion) {
         Throwables.checkNull(message);
-        int size = 4; // type is int
+        int size = 4 + 4; // type and state is int
         if (!Predicates.isEmpty(message.getMsg())) {
             size += 4 + message.getMsg().length();
         } else {
@@ -110,6 +110,9 @@ public final class MessageIO {
                 sink.writeUtf8(msg.getMsg());
                 len += 4 + msg.getMsg().length();
             }
+            sink.writeInt(msg.getState());
+            len += 4;
+
             TypeAdapter adapter = getTypeAdapter(msg.getEntity(), version);
             len += adapter.write(sink, msg.getEntity());
             sink.flush();
@@ -150,6 +153,7 @@ public final class MessageIO {
     public static <T> Message<T> readMessage(BufferedSource source, TypeAdapter adapter) {
         final int type;
         String str;
+        final int state;
         try {
             type = source.readInt();
             int len = source.readInt();
@@ -162,6 +166,7 @@ public final class MessageIO {
             } else {
                 throw new UnsupportedOperationException("readMessage >> wrong string length.");
             }
+            state = source.readInt();
         } catch (IOException e) {
             throw new MessageException(e);
         }
@@ -175,6 +180,7 @@ public final class MessageIO {
         try {
             msg.setType(type);
             msg.setMsg(str);
+            msg.setState(state);
             msg.setEntity((T) obj);
         } catch (ClassCastException e) {
             throw new RuntimeException(

@@ -19,7 +19,7 @@ package com.heaven7.java.message.protocol;
 /**
  * magic,total-len,version,len,sign,en-type,len.all-data
  *                                   msg
- *                                   type[login, logout, tick, normal],len,full-class-name,ds[len,value,len,value...]
+ *                                   type[login, logout, tick, normal],len,full-class-name,state,ds[len,value,len,value...]
  * @author heaven7
  */
 public class MessageProtocol {

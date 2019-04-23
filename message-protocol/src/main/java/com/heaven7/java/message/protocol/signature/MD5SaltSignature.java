@@ -51,6 +51,6 @@ class MD5Util {
             return "";
         }
         byte[] result = md5.digest(message.getBytes(StandardCharsets.UTF_8));
-        return toHexString(result).toLowerCase(Locale.getDefault());
+        return toHexString(result).toLowerCase(Locale.CHINA);
     }
 }

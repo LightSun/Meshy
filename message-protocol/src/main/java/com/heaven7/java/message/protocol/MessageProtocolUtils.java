@@ -31,17 +31,25 @@ import java.security.GeneralSecurityException;
 
     public static @Nullable MessageProtocol readMessageProtocol(BufferedSource source) throws IOException {
         //peek the source to check data is all reached or not,
-        BufferedSource peek = source.peek();
+        //peek.request() have bug . it will blocked all the time(even if the socket write data and flushed.)
+        /*BufferedSource peek = source.peek();
         if(!peek.request(8)){
             return null;
         }
         peek.skip(4);
         final int totalLength = peek.readInt();
-        //not all reached
         if(!peek.request(totalLength)){
             return null;
         }
-        source.skip(8);
+        source.skip(8);*/
+        int magic = source.readInt();
+        if(magic != MessageProtocol.MAGIC){
+             throw new MessageException("magic error.");
+        }
+        int totalLen = source.readInt();
+        if(!source.request(totalLen)){ // not all reached.
+            return null;
+        }
 
         MessageProtocol protocal = new MessageProtocol();
         //version

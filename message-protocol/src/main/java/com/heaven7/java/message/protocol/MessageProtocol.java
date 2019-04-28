@@ -24,7 +24,7 @@ package com.heaven7.java.message.protocol;
  */
 public class MessageProtocol {
 
-    public static final int MAGIC = 0x0053;  //12 + 15 + 7 + 4 + 0 + 21 + 4 + 13 + 7 = 83 (mpheaven7)
+    public static final int MAGIC = 0xf053;  //12 + 15 + 7 + 4 + 0 + 21 + 4 + 13 + 7 = 83 (mpheaven7)
 
     private float version;
     private String sign;

@@ -72,11 +72,15 @@ public final class MessageSecureWrapper {
      * @throws IOException if write out error
      */
     public int encode(BufferedSink sink, byte[] data) throws GeneralSecurityException, IOException {
-        int count = 0;
+        int count = 2; // chunk-count as short
         int length = MessageConfigManager.getSegmentationPolicy().getSecureSegmentLength();
         //length required
         if(!(secure instanceof UnsafeMessageSecure) && length > 0 && data.length > length){
             List<byte[]> bytes = ArrayUtils.splitArray(data, length);
+            //as socket will blocked . so we need write the chunk count.
+            if(sink != null){
+                sink.writeShort(bytes.size());
+            }
             for (byte[] splitData : bytes){
                 byte[] encodes = secure.encode(splitData);
                 count += 4 + encodes.length;
@@ -89,6 +93,7 @@ public final class MessageSecureWrapper {
             byte[] encodes = secure.encode(data);
             count += 4 + encodes.length;
             if(sink != null){
+                sink.writeInt(1);//chunk-count
                 sink.writeInt(encodes.length);
                 sink.write(encodes);
             }
@@ -104,9 +109,10 @@ public final class MessageSecureWrapper {
      * @throws GeneralSecurityException if decode occurs
      */
     public byte[] decode(BufferedSource source) throws IOException, GeneralSecurityException {
+        final short chunkCount = source.readShort();
         List<byte[]> list = new ArrayList<>();
         int total = 0;
-        while (!source.exhausted()){
+        for (int i = chunkCount - 1; i >=0 ; i --){
             int size = source.readInt();
             byte[] data = secure.decode(source.readByteArray(size));
             list.add(data);

@@ -43,7 +43,7 @@ public class OkMessageTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedSink bufferedSink = Okio.buffer(Okio.sink(baos));
         int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA);
-        int writeSize = OkMessage.writeMessage(bufferedSink,mess, TYPE_RSA);
+        int writeSize = OkMessage.writeMessage(bufferedSink, mess, TYPE_RSA);
         bufferedSink.close();
         Assert.assertTrue(evaluateSize == writeSize);
         Assert.assertTrue(writeSize == baos.size());

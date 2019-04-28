@@ -51,7 +51,7 @@ publish {
     userOrg = 'lightsun' //bintray user name
     groupId = 'com.heaven7.java.message.protocol'
     artifactId = 'Message-protocol'
-    publishVersion = '1.0.3'
+    publishVersion = '1.0.4'
     desc = 'this is a java lib of message-protocol. '
     website = 'https://github.com/LightSun/message-protocol'
 }

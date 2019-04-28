@@ -93,7 +93,7 @@ public final class MessageSecureWrapper {
             byte[] encodes = secure.encode(data);
             count += 4 + encodes.length;
             if(sink != null){
-                sink.writeInt(1);//chunk-count
+                sink.writeShort(1);//chunk-count
                 sink.writeInt(encodes.length);
                 sink.write(encodes);
             }

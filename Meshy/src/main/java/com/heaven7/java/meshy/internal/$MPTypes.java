@@ -22,7 +22,6 @@ import com.heaven7.java.meshy.Meshy;
 import com.heaven7.java.meshy.TypeAdapter;
 import com.heaven7.java.meshy.TypeAdapterContext;
 import com.heaven7.java.meshy.TypeNode;
-import com.heaven7.java.message.protocol.*;
 import com.heaven7.java.meshy.adapter.ArrayTypeAdapter;
 import com.heaven7.java.meshy.adapter.CollectionTypeAdapter;
 import com.heaven7.java.meshy.adapter.MapTypeAdapter;

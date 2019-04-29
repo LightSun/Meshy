@@ -22,7 +22,7 @@ package com.heaven7.java.meshy;
  *                                   type[login, logout, tick, normal],len,full-class-name,state,ds[len,value,len,value...]
  * @author heaven7
  */
-public class MessageProtocol {
+/*public*/ class MessageProtocol {
 
     public static final int MAGIC = 0xf053;  //12 + 15 + 7 + 4 + 0 + 21 + 4 + 13 + 7 = 83 (mpheaven7)
 

@@ -20,7 +20,6 @@ import com.heaven7.java.meshy.MemberProxy;
 import com.heaven7.java.meshy.Meshy;
 import com.heaven7.java.meshy.TypeAdapter;
 import com.heaven7.java.meshy.TypeNode;
-import com.heaven7.java.message.protocol.*;
 
 import java.lang.reflect.Type;
 

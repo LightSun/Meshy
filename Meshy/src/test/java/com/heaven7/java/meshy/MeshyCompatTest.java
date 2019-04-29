@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream;
 /**
  * @author heaven7
  */
-public class MessageCompatTest{
+public class MeshyCompatTest {
 
     private TestContext mContext;
 

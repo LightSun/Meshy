@@ -18,7 +18,6 @@ package com.heaven7.java.meshy.adapter;
 
 import com.heaven7.java.meshy.*;
 import com.heaven7.java.meshy.internal.MUtils;
-import com.heaven7.java.message.protocol.*;
 import okio.BufferedSink;
 import okio.BufferedSource;
 

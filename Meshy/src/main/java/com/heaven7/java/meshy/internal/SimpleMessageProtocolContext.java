@@ -6,7 +6,6 @@ import com.heaven7.java.meshy.MemberProxy;
 import com.heaven7.java.meshy.MessageProtocolContext;
 import com.heaven7.java.meshy.TypeAdapter;
 import com.heaven7.java.meshy.adapter.*;
-import com.heaven7.java.message.protocol.adapter.*;
 import com.heaven7.java.meshy.anno.FieldMember;
 import com.heaven7.java.meshy.anno.FieldMembers;
 import com.heaven7.java.meshy.anno.Inherit;

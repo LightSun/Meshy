@@ -49,9 +49,9 @@ dependencies {
 }
 publish {
     userOrg = 'lightsun' //bintray user name
-    groupId = 'com.heaven7.java.message.protocol'
+    groupId = 'com.heaven7.java.meshy'
     artifactId = 'Meshy'
-    publishVersion = '1.2.0'
-    desc = 'this is a java lib of message-protocol. '
-    website = 'https://github.com/LightSun/message-protocol'
+    publishVersion = '1.0.0'
+    desc = 'this is a java lib of message-protocol named meshy.'
+    website = 'https://github.com/LightSun/Meshy'
 }

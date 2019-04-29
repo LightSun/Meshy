@@ -2,7 +2,6 @@ package com.heaven7.java.meshy.adapter;
 
 import com.heaven7.java.meshy.TypeAdapter;
 import com.heaven7.java.meshy.TypeAdapters;
-import com.heaven7.java.message.protocol.*;
 
 public class CommonNullTypeAdapterTest extends BaseAdapterTest<Void> {
 

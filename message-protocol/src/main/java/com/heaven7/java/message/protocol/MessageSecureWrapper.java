@@ -40,13 +40,12 @@ public final class MessageSecureWrapper {
      * create wrapper by message secure
      * @param secure the message secure
      */
-    public MessageSecureWrapper(MessageSecure secure) {
+    /*public*/ MessageSecureWrapper(MessageSecure secure) {
         this.secure = secure;
     }
-    public MessageSecure getMessageSecure() {
+    public MessageSecure unwrap() {
         return secure;
     }
-
     /**
      * encode the raw data and flush to the sink
      * @param sink the out sink
@@ -55,8 +54,8 @@ public final class MessageSecureWrapper {
      * @throws GeneralSecurityException if an secure exception occurs
      * @throws IOException if write get an I/O error.
      */
-    public int encodeWithFlush(BufferedSink sink, byte[] data) throws GeneralSecurityException, IOException {
-        int result = encode(sink, data);
+    public int encodeWithFlush(BufferedSink sink, byte[] data, SegmentationPolicy policy) throws GeneralSecurityException, IOException {
+        int result = encode(sink, data, policy);
         if(sink != null){
             sink.flush();
         }
@@ -67,13 +66,14 @@ public final class MessageSecureWrapper {
      * encode the raw data to the sink by {@linkplain MessageSecure}.
      * @param sink the out sink
      * @param data the raw data
+     * @param policy the Segmentation Policy
      * @return the size as bytes count after encode
      * @throws GeneralSecurityException if throws
      * @throws IOException if write out error
      */
-    public int encode(BufferedSink sink, byte[] data) throws GeneralSecurityException, IOException {
+    public int encode(BufferedSink sink, byte[] data, SegmentationPolicy policy) throws GeneralSecurityException, IOException {
         int count = 2; // chunk-count as short
-        int length = MessageConfigManager.getSegmentationPolicy().getSecureSegmentLength();
+        int length = policy.getSecureSegmentLength();
         //length required
         if(!(secure instanceof UnsafeMessageSecure) && length > 0 && data.length > length){
             List<byte[]> bytes = ArrayUtils.splitArray(data, length);

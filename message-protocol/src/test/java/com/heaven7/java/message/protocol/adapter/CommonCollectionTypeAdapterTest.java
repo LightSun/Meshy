@@ -11,12 +11,7 @@ public class CommonCollectionTypeAdapterTest extends BaseAdapterTest<List<TestEn
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return TypeAdapters.ofTypeToken(new TypeToken<List<TestEntity>>(){});
+        return TypeAdapters.ofTypeToken(new TypeToken<List<TestEntity>>(){}, getMeshy());
     }
 
     @Override

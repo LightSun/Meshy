@@ -31,23 +31,23 @@ import static com.heaven7.java.message.protocol.TypeAdapters.getTypeAdapter;
  * the message io used to write adn read message.
  * @author heaven7
  */
-public final class MessageIO {
+/*public*/ final class MessageIO {
 
     /**
      * evaluate the size of message which will be write.
      * @param message the message
      * @return the size as bytes count
      */
-    public static int evaluateSize(Message<?> message) {
-        return evaluateSize(message, MessageConfigManager.getVersion());
+    public static int evaluateSize(Message<?> message, Meshy meshy) {
+        return evaluateSize(message, meshy, meshy.getVersion());
     }
     /**
      * evaluate the size of message which will be write.
      * @param message the message
-     * @param applyVersion the apply version
+     * @param version the apply version
      * @return the size as bytes count
      */
-    public static int evaluateSize(Message<?> message, float applyVersion) {
+    public static int evaluateSize(Message<?> message, Meshy meshy, float version) {
         Throwables.checkNull(message);
         int size = 4 + 4; // type and state is int
         if (!Predicates.isEmpty(message.getMsg())) {
@@ -55,7 +55,7 @@ public final class MessageIO {
         } else {
             size += 4;
         }
-        size += evaluateSize(message.getEntity(), applyVersion);
+        size += evaluateSize(message.getEntity(), meshy, version);
         return size;
     }
     /**
@@ -63,8 +63,8 @@ public final class MessageIO {
      * @param obj the object if null return 0.
      * @return the size as bytes count
      */
-    public static int evaluateSize(Object obj) {
-        return evaluateSize(obj, MessageConfigManager.getVersion());
+    public static int evaluateSize(Object obj,Meshy meshy) {
+        return evaluateSize(obj, meshy, meshy.getVersion());
     }
     /**
      * evaluate the size of object.
@@ -72,8 +72,8 @@ public final class MessageIO {
      * @param version the apply version
      * @return the size as bytes count
      */
-    public static int evaluateSize(Object obj, float version) {
-        TypeAdapter adapter = getTypeAdapter(obj, version);
+    public static int evaluateSize(Object obj, Meshy meshy, float version) {
+        TypeAdapter adapter = getTypeAdapter(obj, meshy, version);
         return adapter.evaluateSize(obj);
     }
     /**
@@ -83,8 +83,8 @@ public final class MessageIO {
      * @return the write length as bytes count
      */
     @SuppressWarnings("unchecked")
-    public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg) {
-        return writeMessage(sink, msg, MessageConfigManager.getVersion());
+    public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg, Meshy meshy) {
+        return writeMessage(sink, msg, meshy, meshy.getVersion());
     }
     /**
      * write the message to the sink
@@ -94,7 +94,7 @@ public final class MessageIO {
      * @return the write length as bytes count
      */
     @SuppressWarnings("unchecked")
-    public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg, float version) {
+    public static int writeMessage(BufferedSink sink, @NonNull Message<?> msg,  Meshy meshy, float version) {
         int len = 0;
         try {
             sink.writeInt(msg.getType());
@@ -113,34 +113,36 @@ public final class MessageIO {
             sink.writeInt(msg.getState());
             len += 4;
 
-            TypeAdapter adapter = getTypeAdapter(msg.getEntity(), version);
+            TypeAdapter adapter = getTypeAdapter(msg.getEntity(), meshy, version);
             len += adapter.write(sink, msg.getEntity());
             sink.flush();
         } catch (IOException e) {
-            throw new MessageException(e);
+            throw new MeshyException(e);
         }
         return len;
     }
     /**
      * read message from the source
      * @param source the source to read
+     * @param meshy the meshy
      * @param <T> the entity type
      * @return the message that was read.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Message<T> readMessage(BufferedSource source) {
-        return readMessage(source, MessageConfigManager.getVersion());
+    public static <T> Message<T> readMessage(BufferedSource source, Meshy meshy) {
+        return readMessage(source, meshy, meshy.getVersion());
     }
     /**
-     * read message from the source
+     * read message from the source by target meshy and version.
      * @param source the source to read
+     * @param meshy the meshy
      * @param version the version code to read message
      * @param <T> the entity type
      * @return the message that was read.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Message<T> readMessage(BufferedSource source, float version) {
-        return readMessage(source, new ObjectTypeAdapter(MessageConfigManager.getTypeAdapterContext(), version));
+    public static <T> Message<T> readMessage(BufferedSource source, Meshy meshy, float version) {
+        return readMessage(source, new ObjectTypeAdapter(meshy, version));
     }
     /**
      * read message from the source
@@ -168,7 +170,7 @@ public final class MessageIO {
             }
             state = source.readInt();
         } catch (IOException e) {
-            throw new MessageException(e);
+            throw new MeshyException(e);
         }
         Object obj;
         try {

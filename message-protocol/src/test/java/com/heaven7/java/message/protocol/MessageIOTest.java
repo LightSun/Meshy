@@ -14,16 +14,12 @@ import java.io.ByteArrayOutputStream;
  * base test for simple entity
  * @author heaven7
  */
-public class MessageIOTest {
+public class MessageIOTest extends TestContext{
 
     protected Object mEntity;
 
     public MessageIOTest() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        super(1.0f);
     }
 
     protected void initEntity() {
@@ -64,7 +60,7 @@ public class MessageIOTest {
         initEntity();
         byte[] arr = testWrite0(null);
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source);
+        Message<?> msg = MessageIO.readMessage(source, getMeshy());
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg() == null);
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());
@@ -75,7 +71,7 @@ public class MessageIOTest {
         initEntity();
         byte[] arr = testWrite0("");
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source);
+        Message<?> msg = MessageIO.readMessage(source, getMeshy());
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().length() == 0);
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());
@@ -86,7 +82,7 @@ public class MessageIOTest {
         initEntity();
         byte[] arr = testWrite0("Hello google");
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source);
+        Message<?> msg = MessageIO.readMessage(source, getMeshy());
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().equals("Hello google"));
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());
@@ -98,8 +94,8 @@ public class MessageIOTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedSink sink = Okio.buffer(Okio.sink(baos));
         //msg: 4 + 4 + message.length + entity-length
-        int byteCount = MessageIO.writeMessage(sink, msg);
-        Assert.assertEquals(byteCount, MessageIO.evaluateSize(msg));
+        int byteCount = MessageIO.writeMessage(sink, msg, getMeshy());
+        Assert.assertEquals(byteCount, MessageIO.evaluateSize(msg, getMeshy()));
         return baos.toByteArray();
     }
 }

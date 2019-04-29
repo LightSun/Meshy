@@ -7,12 +7,7 @@ public class CommonNullTypeAdapterTest extends BaseAdapterTest<Void> {
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return TypeAdapters.getTypeAdapter(null, MessageConfigManager.getVersion());
+        return TypeAdapters.getTypeAdapter(null, getMeshy(), getMeshy().getVersion());
     }
 
     @Override

@@ -19,7 +19,6 @@ package com.heaven7.java.message.protocol;
 import com.heaven7.java.base.anno.Nullable;
 import com.heaven7.java.message.protocol.adapter.NullTypeAdapter;
 import com.heaven7.java.message.protocol.internal.$MPTypes;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 import com.heaven7.java.message.protocol.reflect.TypeToken;
 
 /**
@@ -28,31 +27,37 @@ import com.heaven7.java.message.protocol.reflect.TypeToken;
  */
 public final class TypeAdapters {
 
-    public static TypeAdapter ofTypeToken(TypeToken<?> tt){
-        return ofTypeToken(tt, MessageConfigManager.getVersion());
+    public static TypeAdapter ofTypeToken(TypeToken<?> tt, Meshy meshy){
+        return ofTypeToken(tt, meshy, meshy.getVersion());
     }
 
-    public static TypeAdapter ofTypeToken(TypeToken<?> tt, float applyVersion){
-        return $MPTypes.getTypeNode(tt.getType()).getTypeAdapter( SimpleMessageProtocolContext.getDefault(),
-                MessageConfigManager.getTypeAdapterContext(), applyVersion);
+    public static TypeAdapter ofTypeToken(TypeToken<?> tt, Meshy meshy, float applyVersion){
+        return $MPTypes.getTypeNode(tt.getType()).getTypeAdapter(meshy, applyVersion);
     }
-
     /**
      * get the type adapter from target object. the object should be any object of self define.
      * mus not be any collection or map.
      * @param obj the object
+     * @param meshy the meshy
+     * @return the type adapter
+     */
+    public static TypeAdapter getTypeAdapter(@Nullable Object obj, Meshy meshy){
+        return getTypeAdapter(obj, meshy, meshy.getVersion());
+    }
+    /**
+     * get the type adapter from target object. the object should be any object of self define.
+     * mus not be any collection or map.
+     * @param obj the object
+     * @param meshy the meshy
      * @param applyVersion the version to apply
      * @return the type adapter
      */
-    public static TypeAdapter getTypeAdapter(@Nullable Object obj, float applyVersion){
+    public static TypeAdapter getTypeAdapter(@Nullable Object obj, Meshy meshy, float applyVersion){
         if(obj == null){
             return NullTypeAdapter.INSTANCE;
         }
         Class<?> clazz = obj.getClass();
-        return $MPTypes.getTypeNode(clazz, clazz).getTypeAdapter(
-                SimpleMessageProtocolContext.getDefault(),
-                MessageConfigManager.getTypeAdapterContext(),
-                applyVersion);
+        return $MPTypes.getTypeNode(clazz, clazz).getTypeAdapter(meshy, applyVersion);
 
     }
 }

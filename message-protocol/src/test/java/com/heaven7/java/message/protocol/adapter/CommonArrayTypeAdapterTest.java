@@ -1,21 +1,15 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.*;
+import com.heaven7.java.message.protocol.TypeAdapter;
+import com.heaven7.java.message.protocol.TypeAdapters;
 import com.heaven7.java.message.protocol.entity.TestEntity;
 import com.heaven7.java.message.protocol.reflect.TypeToken;
-
-import java.lang.reflect.Array;
 
 public class CommonArrayTypeAdapterTest extends BaseAdapterTest<TestEntity[]> {
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return TypeAdapters.ofTypeToken(new TypeToken<TestEntity[]>(){}, MessageConfigManager.getVersion());
+        return TypeAdapters.ofTypeToken(new TypeToken<TestEntity[]>(){}, getMeshy());
     }
 
     @Override

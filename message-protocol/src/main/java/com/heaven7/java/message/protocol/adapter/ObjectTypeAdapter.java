@@ -31,22 +31,16 @@ import java.util.List;
  */
 public final class ObjectTypeAdapter extends TypeAdapter {
 
-    private final MessageProtocolContext mMPContext;
-    private final TypeAdapterContext context;
+    private final Meshy meshy;
     private final float version;
 
-    public ObjectTypeAdapter(MessageProtocolContext mMPContext, TypeAdapterContext context, float applyVersion) {
-        this.mMPContext = mMPContext;
-        this.context = context;
+    public ObjectTypeAdapter(Meshy meshy, float applyVersion) {
+        this.meshy = meshy;
         this.version = applyVersion;
     }
 
-    public ObjectTypeAdapter(TypeAdapterContext context, float applyVersion) {
-       this(OkMessage.getDefaultMessageProtocolContext(), context, applyVersion);
-    }
-
     private List<MemberProxy> getMemberProxies(Class<?> clazz){
-        return mMPContext.getMemberProxies(clazz);
+        return meshy.getMessageProtocolContext().getMemberProxies(clazz);
     }
 
     @Override
@@ -60,28 +54,30 @@ public final class ObjectTypeAdapter extends TypeAdapter {
                 sink.writeByte(1);
                 len += 1;
             }
+            TypeAdapterContext adapterContext = meshy.getTypeAdapterContext();
+
             final Class<?> rawClass = obj.getClass();
             Class<?> targetClass;   //target class to find member proxy.
             //target version > < = local version
-            String name = MessageConfigManager.getRepresentClassName(rawClass);
+            String name = meshy.getRepresentClassName(rawClass);
 
-            float localVersion = MessageConfigManager.getVersion();
+            float localVersion = meshy.getVersion();
             if(localVersion != version){
-                targetClass = MessageConfigManager.getCompatClass(name, Math.min(localVersion, version));
+                targetClass = meshy.getCompatClass(name, Math.min(localVersion, version));
                 //target class is a new class.
                 if(!targetClass.isAssignableFrom(rawClass)){
                     try {
-                        Object obj2 = context.newInstance(targetClass);
+                        Object obj2 = adapterContext.newInstance(targetClass);
                         MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
                                 getMemberProxies(targetClass));
                         obj = obj2;
                     }catch (Exception e){
-                        throw new MessageException("create compat object failed, class is "
+                        throw new MeshyException("create compat object failed, class is "
                                 + targetClass.getName(), e);
                     }
                 }
             } else {
-                targetClass = MessageConfigManager.getCompatClass(name, version);
+                targetClass = meshy.getCompatClass(name, version);
             }
             //write class name
             sink.writeInt(name.length());
@@ -91,11 +87,11 @@ public final class ObjectTypeAdapter extends TypeAdapter {
             List<MemberProxy> proxies = getMemberProxies(targetClass);
             for (MemberProxy proxy : proxies) {
                // System.out.println("write >>> object:  propName = " + proxy.getPropertyName());
-                TypeAdapter adapter = proxy.getTypeAdapter(mMPContext, context, version);
+                TypeAdapter adapter = proxy.getTypeAdapter(meshy, version);
                 len += adapter.write(sink, proxy.getObject(obj));
             }
         } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
-            throw new MessageException(e);
+            throw new MeshyException(e);
         }
         return len;
     }
@@ -107,17 +103,17 @@ public final class ObjectTypeAdapter extends TypeAdapter {
             if (source.readByte() != 1) {
                 return null;
             }
+
             int classLen = source.readInt();
             final String fullName = source.readUtf8(classLen);
             // remote version > < = local version
             Class<?> clazz;
-            clazz = MessageConfigManager.getCompatClass(fullName,
-                    Math.min(version, MessageConfigManager.getVersion()));
-            Object obj = context.newInstance(clazz);
+            clazz = meshy.getCompatClass(fullName, Math.min(version, meshy.getVersion()));
+            Object obj = meshy.getTypeAdapterContext().newInstance(clazz);
 
             List<MemberProxy> proxies = getMemberProxies(clazz);
             for (MemberProxy proxy : proxies) {
-                TypeAdapter adapter = proxy.getTypeAdapter(mMPContext, context, version);
+                TypeAdapter adapter = proxy.getTypeAdapter(meshy, version);
                 Object value = adapter.read(source);
                 proxy.setObject(obj, value);
             }
@@ -126,7 +122,7 @@ public final class ObjectTypeAdapter extends TypeAdapter {
                 | IllegalAccessException
                 | NullPointerException
                 | InvocationTargetException e) {
-            throw new MessageException(e);
+            throw new MeshyException(e);
         }
     }
 
@@ -139,39 +135,41 @@ public final class ObjectTypeAdapter extends TypeAdapter {
             } else {
                 len += 1;
             }
+            TypeAdapterContext adapterContext = meshy.getTypeAdapterContext();
+
             final Class<?> rawClass = obj.getClass();
             Class<?> targetClass;   //target class to find member proxy.
             //target version > < = local version
-            String name = MessageConfigManager.getRepresentClassName(rawClass);
+            String name = meshy.getRepresentClassName(rawClass);
 
-            float localVersion = MessageConfigManager.getVersion();
+            float localVersion = meshy.getVersion();
             if(localVersion != version){
-                targetClass = MessageConfigManager.getCompatClass(name, Math.min(localVersion, version));
+                targetClass = meshy.getCompatClass(name, Math.min(localVersion, version));
                 //target class is a new class.
                 if(!targetClass.isAssignableFrom(rawClass)){
                     try {
-                        Object obj2 = context.newInstance(targetClass);
+                        Object obj2 = adapterContext.newInstance(targetClass);
                         MUtils.copyProperties(obj, obj2, getMemberProxies(rawClass),
                                 getMemberProxies(targetClass));
                         obj = obj2;
                     }catch (Exception e){
-                        throw new MessageException("create compat object failed, class is "
+                        throw new MeshyException("create compat object failed, class is "
                                 + targetClass.getName(), e);
                     }
                 }
             } else {
-                targetClass = MessageConfigManager.getCompatClass(name, version);
+                targetClass = meshy.getCompatClass(name, version);
             }
             //write class name
             len += 4 + name.length();
             // write data.
             List<MemberProxy> proxies = getMemberProxies(targetClass);
             for (MemberProxy proxy : proxies) {
-                TypeAdapter adapter = proxy.getTypeAdapter(mMPContext, context, version);
+                TypeAdapter adapter = proxy.getTypeAdapter(meshy, version);
                 len += adapter.evaluateSize(proxy.getObject(obj));
             }
         } catch ( ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
-            throw new MessageException(e);
+            throw new MeshyException(e);
         }
         return len;
     }

@@ -1,25 +1,13 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MessageConfigManager;
-import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestEntity;
 
-/**
- * object type adapter use the {@linkplain com.heaven7.java.message.protocol.MessageConfigManager} so need init
- */
 public class ObjectTypeAdapterTest extends BaseAdapterTest<TestEntity>{
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new ObjectTypeAdapter(
-                MessageConfigManager.getTypeAdapterContext(),
-                MessageConfigManager.getVersion());
+        return createObjectTypeAdapter();
     }
 
     @Override

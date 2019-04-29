@@ -41,8 +41,8 @@ import java.lang.reflect.Type;
         return mOwnerClass;
     }
     @Override
-    public final TypeAdapter getTypeAdapter(MessageProtocolContext mpContext, TypeAdapterContext context, float applyVersion) {
-        return mNode.getTypeAdapter(mpContext, context, applyVersion);
+    public final TypeAdapter getTypeAdapter(Meshy meshy, float applyVersion) {
+        return mNode.getTypeAdapter(meshy, applyVersion);
     }
     public static int getType(int value){
         return value & TYPE_MASK;

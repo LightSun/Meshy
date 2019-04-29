@@ -19,17 +19,17 @@ package com.heaven7.java.message.protocol;
 /**
  * @author heaven7
  */
-public class MessageException extends RuntimeException {
+public class MeshyException extends RuntimeException {
 
-    public MessageException() {
+    public MeshyException() {
     }
-    public MessageException(String message) {
+    public MeshyException(String message) {
         super(message);
     }
-    public MessageException(String message, Throwable cause) {
+    public MeshyException(String message, Throwable cause) {
         super(message, cause);
     }
-    public MessageException(Throwable cause) {
+    public MeshyException(Throwable cause) {
         super(cause);
     }
 }

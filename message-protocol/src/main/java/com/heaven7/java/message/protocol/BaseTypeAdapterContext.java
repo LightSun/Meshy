@@ -18,10 +18,8 @@ package com.heaven7.java.message.protocol;
 
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
-import com.heaven7.java.message.protocol.internal.$MPTypes;
 import com.heaven7.java.message.protocol.util.Pair;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -107,21 +105,6 @@ public class BaseTypeAdapterContext implements TypeAdapterContext {
     @Override
     public boolean isMap(Class<?> rawType) {
         return Map.class.isAssignableFrom(rawType) || SparseArrayDelegate.class.isAssignableFrom(rawType);
-    }
-
-    @Override
-    public final void putTypeAdapter(Type type, float version, TypeAdapter adapter) {
-        TypeNode node = $MPTypes.getTypeNode(type);
-        mMap.put(node, new Pair<>(version, adapter));
-    }
-
-    @Override
-    public final TypeAdapter getTypeAdapter(TypeNode type, float expectVersion) {
-        Pair<Float, TypeAdapter> pair = mMap.get(type);
-        if(pair != null && expectVersion >= pair.key){
-            return pair.value;
-        }
-        return null;
     }
 
     private static class SparseArrayMap<V> implements Map<Integer,V>, Wrapper<SparseArrayDelegate<V>>{

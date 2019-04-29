@@ -1,10 +1,7 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MessageConfigManager;
-import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestEntity;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,15 +11,8 @@ public class CollectionTypeAdapterTest extends BaseAdapterTest<List<TestEntity>>
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(
-                MessageConfigManager.getTypeAdapterContext(),
-                MessageConfigManager.getVersion());
-        return new CollectionTypeAdapter(MessageConfigManager.getTypeAdapterContext(), componentTypeAdapter);
+        ObjectTypeAdapter componentTypeAdapter = createObjectTypeAdapter();
+        return new CollectionTypeAdapter(getMeshy().getTypeAdapterContext(), componentTypeAdapter);
     }
 
     @Override

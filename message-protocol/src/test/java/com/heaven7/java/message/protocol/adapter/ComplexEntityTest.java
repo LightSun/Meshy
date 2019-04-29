@@ -1,7 +1,5 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MessageConfigManager;
-import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestComplexEntity;
 
@@ -14,13 +12,7 @@ public class ComplexEntityTest extends BaseAdapterTest<TestComplexEntity> {
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ObjectTypeAdapter adapter = new ObjectTypeAdapter(MessageConfigManager.getTypeAdapterContext(), MessageConfigManager.getVersion());
-        return adapter;
+        return createObjectTypeAdapter();
     }
 
     @Override

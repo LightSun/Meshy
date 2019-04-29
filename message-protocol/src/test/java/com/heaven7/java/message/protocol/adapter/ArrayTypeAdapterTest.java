@@ -1,24 +1,13 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MessageConfigManager;
-import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestEntity;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 
 public class ArrayTypeAdapterTest extends BaseAdapterTest<TestEntity[]> {
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(
-                MessageConfigManager.getTypeAdapterContext(),
-                MessageConfigManager.getVersion());
-        return new ArrayTypeAdapter(TestEntity.class, componentTypeAdapter);
+        return new ArrayTypeAdapter(TestEntity.class, createObjectTypeAdapter());
     }
 
     @Override

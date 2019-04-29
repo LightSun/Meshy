@@ -28,7 +28,7 @@ public class MessageIOTest3 extends MessageIOTest {
         mEntity = entity;
 
         try {
-            MessageIO.evaluateSize(entity);
+            MessageIO.evaluateSize(entity, getMeshy());
         }catch (IllegalStateException e){
             System.out.println(e.getMessage());
             //expect exception
@@ -48,7 +48,7 @@ public class MessageIOTest3 extends MessageIOTest {
 
         byte[] arr = testWrite0("Hello google");
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source, 1.0f);
+        Message<?> msg = MessageIO.readMessage(source, getMeshy());
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().equals("Hello google"));
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());
@@ -63,7 +63,7 @@ public class MessageIOTest3 extends MessageIOTest {
 
         byte[] arr = testWrite0("Hello google");
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(arr)));
-        Message<?> msg = MessageIO.readMessage(source, 1.0f);
+        Message<?> msg = MessageIO.readMessage(source, getMeshy());
         Assert.assertEquals(msg.getType(), Message.COMMON);
         Assert.assertTrue(msg.getMsg().equals("Hello google"));
         Assert.assertEquals(msg.getEntity(), getEqualsEntity());

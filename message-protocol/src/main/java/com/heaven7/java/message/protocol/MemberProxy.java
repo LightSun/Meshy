@@ -43,7 +43,7 @@ public interface MemberProxy{
 
     Class<?> getOwnerClass();
 
-    TypeAdapter getTypeAdapter(MessageProtocolContext mpContext, TypeAdapterContext context, float applyVersion);
+    TypeAdapter getTypeAdapter(Meshy meshy, float applyVersion);
 
     void setObject(Object obj, Object value) throws IllegalAccessException, InvocationTargetException;
     Object getObject(Object obj)  throws IllegalAccessException, InvocationTargetException;

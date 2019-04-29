@@ -3,25 +3,14 @@ package com.heaven7.java.message.protocol.adapter;
 
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
-import com.heaven7.java.message.protocol.MessageConfigManager;
-import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestEntity;
-import com.heaven7.java.message.protocol.internal.SimpleMessageProtocolContext;
 
 public class MapTypeAdapterTest2 extends BaseAdapterTest<SparseArrayDelegate<TestEntity>> {
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ObjectTypeAdapter componentTypeAdapter = new ObjectTypeAdapter(
-                MessageConfigManager.getTypeAdapterContext(),
-                MessageConfigManager.getVersion());
-        return new MapTypeAdapter(MessageConfigManager.getTypeAdapterContext(), new IntPackedAdapter(), componentTypeAdapter);
+        return new MapTypeAdapter(getMeshy().getTypeAdapterContext(), new IntPackedAdapter(), createObjectTypeAdapter());
     }
 
     @Override

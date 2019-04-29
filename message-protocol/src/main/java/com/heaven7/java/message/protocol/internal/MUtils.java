@@ -16,6 +16,7 @@
  */
 package com.heaven7.java.message.protocol.internal;
 
+import com.heaven7.java.base.anno.Hide;
 import com.heaven7.java.base.util.TextUtils;
 import com.heaven7.java.message.protocol.MemberProxy;
 import com.heaven7.java.message.protocol.anno.MethodMember;
@@ -28,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * @author heaven7
  */
+@Hide
 public final class MUtils {
 
     public static void copyProperties(Object from, Object to, List<MemberProxy> fromProxies, List<MemberProxy> toProxies)

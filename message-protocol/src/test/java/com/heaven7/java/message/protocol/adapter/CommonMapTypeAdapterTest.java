@@ -1,7 +1,5 @@
 package com.heaven7.java.message.protocol.adapter;
 
-import com.heaven7.java.message.protocol.MessageConfigManager;
-import com.heaven7.java.message.protocol.MessageConfigManagerTest;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.TypeAdapters;
 import com.heaven7.java.message.protocol.entity.TestEntity;
@@ -15,12 +13,7 @@ public class CommonMapTypeAdapterTest extends BaseAdapterTest<Map<Integer, TestE
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return TypeAdapters.ofTypeToken(new TypeToken<Map<Integer, TestEntity>>(){}, MessageConfigManager.getVersion());
+        return TypeAdapters.ofTypeToken(new TypeToken<Map<Integer, TestEntity>>(){}, getMeshy());
     }
 
     @Override

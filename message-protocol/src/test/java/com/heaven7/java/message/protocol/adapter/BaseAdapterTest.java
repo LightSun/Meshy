@@ -1,5 +1,6 @@
 package com.heaven7.java.message.protocol.adapter;
 
+import com.heaven7.java.message.protocol.TestContext;
 import com.heaven7.java.message.protocol.TypeAdapter;
 import com.heaven7.java.message.protocol.entity.TestEntity;
 import okio.BufferedSink;
@@ -11,7 +12,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-public abstract class BaseAdapterTest<T> {
+public abstract class BaseAdapterTest<T> extends TestContext{
 
     private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private final TypeAdapter mAdapter;
@@ -28,6 +29,10 @@ public abstract class BaseAdapterTest<T> {
     public BaseAdapterTest(TypeAdapter mAdapter, T value) {
         this.mAdapter = mAdapter;
         this.mValue = value;
+    }
+
+    public ObjectTypeAdapter createObjectTypeAdapter(){
+        return new ObjectTypeAdapter(getMeshy(), getMeshy().getVersion());
     }
 
     protected TypeAdapter onCreateTypeAdapter(){

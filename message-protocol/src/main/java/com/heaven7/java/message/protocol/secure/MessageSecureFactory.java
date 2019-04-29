@@ -16,7 +16,7 @@
  */
 package com.heaven7.java.message.protocol.secure;
 
-import com.heaven7.java.message.protocol.MessageConfigManager;
+import com.heaven7.java.message.protocol.MeshyException;
 import com.heaven7.java.message.protocol.MessageSecure;
 import com.heaven7.java.message.protocol.util.RSAUtils;
 
@@ -32,13 +32,12 @@ public final class MessageSecureFactory {
 
     public static MessageSecure createMessageSecure(String className, String... params)
             throws ClassNotFoundException, IllegalAccessException, InvocationTargetException,
-            InstantiationException, NoSuchMethodException,
-            MessageConfigManager.ConfigException {
+            InstantiationException, NoSuchMethodException{
         //
         final Class<?> clazz = Class.forName(className);
         if(clazz == SingleRSAMessageSecure.class){
             if(params.length != 2){
-                throw new MessageConfigManager.ConfigException("param count error.");
+                throw new IllegalStateException("param count error.");
             }
             Constructor<?> cons = clazz.getConstructor(byte[].class, boolean.class);
             Boolean bool = Boolean.valueOf(params[1]);
@@ -53,13 +52,13 @@ public final class MessageSecureFactory {
                 return (MessageSecure) cons.newInstance(RSAUtils.getPublicKey(params[0]),
                         RSAUtils.getPrivateKey(params[1]), Byte.valueOf(params[2]));
             }else {
-                throw new MessageConfigManager.ConfigException("param count error.");
+                throw new IllegalStateException("param count error.");
             }
         }else if(clazz == UnsafeMessageSecure.class){
             return UnsafeMessageSecure.INSTANCE;
         }
         else {
-            throw new MessageConfigManager.ConfigException("unsupport Message Secure class = " + className);
+            throw new IllegalStateException("unsupport Message Secure class = " + className);
         }
     }
 }

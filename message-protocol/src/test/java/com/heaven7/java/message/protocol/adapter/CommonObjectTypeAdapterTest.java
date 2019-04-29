@@ -7,12 +7,7 @@ public class CommonObjectTypeAdapterTest extends BaseAdapterTest<TestEntity> {
 
     @Override
     protected TypeAdapter onCreateTypeAdapter() {
-        try {
-            MessageConfigManagerTest.initConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return TypeAdapters.getTypeAdapter(new TestEntity(), MessageConfigManager.getVersion());
+        return TypeAdapters.getTypeAdapter(new TestEntity(), getMeshy());
     }
 
     @Override

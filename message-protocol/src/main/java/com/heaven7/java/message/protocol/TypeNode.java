@@ -24,12 +24,11 @@ public interface TypeNode {
 
     /**
      * get the type adapter from
-     * @param mpContext the message protocol context
-     * @param context the type adapter context
+     * @param meshy the meshy
      * @param applyVersion the expect version
      * @return the type adapter
      */
-    TypeAdapter getTypeAdapter(MessageProtocolContext mpContext, TypeAdapterContext context, float applyVersion);
+    TypeAdapter getTypeAdapter(Meshy meshy, float applyVersion);
 
     /**
      * the hash code of this node

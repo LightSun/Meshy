@@ -18,10 +18,7 @@ package com.heaven7.java.message.protocol.internal;
 
 import com.heaven7.java.base.anno.Hide;
 import com.heaven7.java.base.util.Predicates;
-import com.heaven7.java.message.protocol.MessageProtocolContext;
-import com.heaven7.java.message.protocol.TypeAdapter;
-import com.heaven7.java.message.protocol.TypeAdapterContext;
-import com.heaven7.java.message.protocol.TypeNode;
+import com.heaven7.java.message.protocol.*;
 import com.heaven7.java.message.protocol.adapter.ArrayTypeAdapter;
 import com.heaven7.java.message.protocol.adapter.CollectionTypeAdapter;
 import com.heaven7.java.message.protocol.adapter.MapTypeAdapter;
@@ -188,33 +185,34 @@ public final class $MPTypes {
             return Objects.hash(type, varNodes, subType, isArray);
         }
 
-        public TypeAdapter getTypeAdapter(MessageProtocolContext mpContext, TypeAdapterContext context, float applyVersion) {
+        public TypeAdapter getTypeAdapter(Meshy meshy, float applyVersion) {
             if(isArray){
                 GenericNode subNode = getSubNode(0);
                 return new ArrayTypeAdapter(subNode.getTypeClass(0),
-                        subNode.getTypeAdapter(mpContext, context, applyVersion));
+                        subNode.getTypeAdapter(meshy, applyVersion));
             }
+            TypeAdapterContext context = meshy.getTypeAdapterContext();
             if(type != null){
-                TypeAdapter typeAdapter = context.getTypeAdapter(this, applyVersion);
+                TypeAdapter typeAdapter = meshy.getTypeAdapter(this, applyVersion);
                 if(typeAdapter != null){
                     return typeAdapter;
                 }
                 //base types
-                TypeAdapter adapter = mpContext.getBaseTypeAdapter(type);
+                TypeAdapter adapter = meshy.getMessageProtocolContext().getBaseTypeAdapter(type);
                 if(adapter != null){
                     return adapter;
                 }
                 if(Collection.class.isAssignableFrom(type)){
                     return new CollectionTypeAdapter(context,
-                            getSubNode(0).getTypeAdapter(mpContext, context, applyVersion));
+                            getSubNode(0).getTypeAdapter(meshy, applyVersion));
                 }else if(Map.class.isAssignableFrom(type) || context.isMap(type)){
-                    return new MapTypeAdapter(context, getSubNode(0).getTypeAdapter(mpContext, context, applyVersion),
-                            getSubNode(1).getTypeAdapter(mpContext, context, applyVersion));
+                    return new MapTypeAdapter(context, getSubNode(0).getTypeAdapter(meshy, applyVersion),
+                            getSubNode(1).getTypeAdapter(meshy, applyVersion));
                 }else {
-                    return new ObjectTypeAdapter(mpContext, context, applyVersion);
+                    return new ObjectTypeAdapter(meshy, applyVersion);
                 }
             }else if(!Predicates.isEmpty(varNodes)){
-                return varNodes.get(0).getTypeAdapter(mpContext, context, applyVersion);
+                return varNodes.get(0).getTypeAdapter(meshy, applyVersion);
             }else {
                 throw new UnsupportedOperationException("un-reach here");
             }

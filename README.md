@@ -99,7 +99,7 @@ public static Meshy initialize(String rsaKey, boolean priKey){
                 .build();
     }
 ```
-
+- 3, the sample to use this framework. you can see [CS-Communication](https://github.com/LightSun/CS-Communication)
 
 ## Thanks
 - [Google/Gson](https://github.com/google/gson). idea from this.

@@ -20,7 +20,6 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * the type adapter which used to write and read message members.

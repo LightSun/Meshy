@@ -233,7 +233,7 @@ public class SimpleMessageProtocolContext implements MessageProtocolContext {
             String property = getPropertyFromMethod(method);
             Method other = null;
             for (Method m2 : others){
-                if(getPropertyFromMethod(method).equals(property)){
+                if(getPropertyFromMethod(m2).equals(property)){
                     other = m2;
                     break;
                 }

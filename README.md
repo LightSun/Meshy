@@ -1,4 +1,4 @@
-# Message-Protocol
+# Meshy
 the general message protocal of 'CS'. use byte stream to read and write message with 'Encryption/Decrypt'.
 
 ### total message Protocol

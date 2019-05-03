@@ -29,7 +29,7 @@ also support String, collection,Map and self types...etc.
             e.printStackTrace();
         }
   ```
-  - Signature. 
+  - Signature. ()
   ```java
   public class HMAC_SHA1SignatureTest {
 
@@ -49,12 +49,10 @@ also support String, collection,Map and self types...etc.
 or write lower version object to higher.
     - from com.heaven7.java.message.protocol.OkMessageTest.
   ```java
-  public void testCompatLowToHigh() throws Exception{
-        try {
-            MessageConfigManagerTest.initConfig(1.0f);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+   @Test //local is lower. remote is higher.
+    public void testCompatLowToHigh() throws Exception{
+        initContext(1.0F);
+
         String msg = "testCompatLowToHigh";
         Person2 person = new Person2();
         person.setAge(18);
@@ -65,18 +63,18 @@ or write lower version object to higher.
         //sender is higher.
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //here we want to send message to client. but client's  version is higher. so we need assign version
-        float applyVersion = MessageConfigManagerTest.getHigherVersion();
+        float applyVersion = TestContext.getHigherVersion();
         BufferedSink bufferedSink = Okio.buffer(Okio.sink(baos));
-        int evaluateSize = OkMessage.evaluateMessageSize(mess, TYPE_RSA, applyVersion);
+        int evaluateSize = mContext.getWriter().evaluateMessageSize(mess, TestContext.TYPE_RSA, applyVersion);
 
-        int writeSize = OkMessage.writeMessage(bufferedSink, mess, TYPE_RSA, applyVersion);
+        int writeSize = mContext.getWriter().writeMessage(bufferedSink, mess, TestContext.TYPE_RSA, applyVersion);
         bufferedSink.close();
         Assert.assertTrue(evaluateSize == writeSize);
         Assert.assertTrue(writeSize == baos.size());
 
         //receiver is lower
         BufferedSource source = Okio.buffer(Okio.source(new ByteArrayInputStream(baos.toByteArray())));
-        Message<Person> mess2 = OkMessage.readMessage(source);
+        Message<Person> mess2 = mContext.getReader().readMessage(source);
         Assert.assertTrue(mess.getType() == mess2.getType());
         Assert.assertTrue(mess.getMsg().equals(mess2.getMsg()));
         Assert.assertTrue(mess2.getEntity().getClass() == Person.class);

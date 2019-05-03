@@ -29,7 +29,7 @@ also support String, collection,Map and self types...etc.
             e.printStackTrace();
         }
   ```
-  - Signature. ()
+  - Signature. (built in md5-slat and sha256-salt, you expend it)
   ```java
   public class HMAC_SHA1SignatureTest {
 
@@ -82,6 +82,24 @@ or write lower version object to higher.
         Assert.assertEquals(mess2.getEntity().getAge(), mess.getEntity().getAge());
     }
   ```
+## Quick Start
+- 1, Gradle config
+```java
+    compile 'com.heaven7.java.meshy:Meshy:<Release-version>'
+```
+- 2, create a 'Meshy' object then you can enjoy it.
+```java
+//this method shows create meshy by MeshyBuilder.
+public static Meshy initialize(String rsaKey, boolean priKey){
+        Key key = priKey ? RSAUtils.getPrivateKey(rsaKey) : RSAUtils.getPublicKey(rsaKey);
+        return new MeshyBuilder()
+                .setVersion(1.0f)
+                .setSignatureKey("Hello Google")
+                .registerMessageSecure(CSConstant.TYPE_RSA_SINGLE, new SingleRSAMessageSecure(key.getEncoded(), priKey))
+                .build();
+    }
+```
+
 
 ## Thanks
 - [Google/Gson](https://github.com/google/gson). idea from this.

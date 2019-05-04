@@ -47,13 +47,29 @@ import java.lang.reflect.Type;
     public final TypeAdapter getTypeAdapter(Meshy meshy, float applyVersion) {
         return mNode.getTypeAdapter(meshy, applyVersion);
     }
+
+    /**
+     * get the base types
+     * @param value the value which is from {@linkplain #parseType(Class)}.
+     * @return the core type . see {@linkplain #TYPE_STRING} and etc.
+     */
     public static int getType(int value){
         return value & TYPE_MASK;
     }
+    /**
+     * get the flag
+     * @param value the value which is from {@linkplain #parseType(Class)}.
+     * @return the extra flag
+     */
     public static int getFlags(int value){
         return (value & TYPE_FLAG_MASK ) >> 8;
     }
 
+    /**
+     * parse the type for base class and string.
+     * @param clazz the class
+     * @return the type
+     */
     public static int parseType(Class<?> clazz){
         if(clazz == byte.class){
             return MemberProxy.TYPE_BYTE;

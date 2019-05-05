@@ -30,8 +30,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class BaseTypeAdapterContext implements TypeAdapterContext {
 
-    private final HashMap<TypeNode, Pair<Float,TypeAdapter>> mMap = new HashMap<>();
-
     @Override
     public Object newInstance(Class<?> clazz) {
         try {

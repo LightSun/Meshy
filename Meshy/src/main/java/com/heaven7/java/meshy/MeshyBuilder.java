@@ -19,7 +19,9 @@ package com.heaven7.java.meshy;
 import com.heaven7.java.base.util.Predicates;
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
+import com.heaven7.java.base.util.Throwables;
 import com.heaven7.java.meshy.internal.$MPTypes;
+import com.heaven7.java.meshy.internal.SimpleMessageProtocolContext;
 import com.heaven7.java.meshy.policy.DefaultRSASegmentationPolicy;
 import com.heaven7.java.meshy.reflect.TypeToken;
 import com.heaven7.java.meshy.signature.HMAC_SHA1Signature;
@@ -57,6 +59,8 @@ public final class MeshyBuilder {
      * the segmentation policy for {@linkplain MessageSecure}
      */
     SegmentationPolicy segmentationPolicy;
+
+    MessageProtocolContext messageProtocolContext;
     /**
      * the message secures. key is type, value is MessageSecure
      */
@@ -68,7 +72,9 @@ public final class MeshyBuilder {
      */
     final Map<String, List<Pair<Class<?>, Float>>> compatMap = new HashMap<>();
 
+
     public MeshyBuilder() {
+        messageProtocolContext = SimpleMessageProtocolContext.getDefault();
         adapterContext = new BaseTypeAdapterContext();
         signature = new HMAC_SHA1Signature();
         segmentationPolicy = new DefaultRSASegmentationPolicy(53);
@@ -108,7 +114,17 @@ public final class MeshyBuilder {
         compatMap.put(classname, pairs);
         return this;
     }
-
+    /**
+     * set the type adapter context
+     * @param context the context
+     * @return this.
+     * @since 1.0.1
+     */
+    public MeshyBuilder setMessageProtocolContext(MessageProtocolContext context){
+        Throwables.checkNull(context);
+        this.messageProtocolContext = context;
+        return this;
+    }
     /**
      * set the type adapter context
      * @param context the context

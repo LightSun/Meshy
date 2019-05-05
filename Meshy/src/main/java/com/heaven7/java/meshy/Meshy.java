@@ -38,7 +38,7 @@ public final class Meshy {
                     return Float.compare(o1.value, o2.value);
                 }
             };
-    private MessageProtocolContext mProtocolContext = SimpleMessageProtocolContext.getDefault();
+    private MessageProtocolContext mProtocolContext;
 
     private final Map<TypeNode, Pair<Float,TypeAdapter>> mAdapterMap;
     private TypeAdapterContext mAdapterContext;
@@ -60,6 +60,7 @@ public final class Meshy {
     /*public*/ Meshy(MeshyBuilder builder) {
          this.mAdapterMap = builder.adapterMap;
          this.mAdapterContext = new WrappedTypeAdapterContext(builder.adapterContext);
+         this.mProtocolContext = builder.messageProtocolContext;
          this.mVersion = builder.version;
          this.mSignKey = builder.signKey;
          this.mSignature = builder.signature;

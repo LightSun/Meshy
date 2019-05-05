@@ -5,6 +5,7 @@ import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
 import com.heaven7.java.meshy.TypeAdapter;
 import com.heaven7.java.meshy.entity.TestEntity;
+import org.junit.Test;
 
 public class MapTypeAdapterTest2 extends BaseAdapterTest<SparseArrayDelegate<TestEntity>> {
 
@@ -30,6 +31,7 @@ public class MapTypeAdapterTest2 extends BaseAdapterTest<SparseArrayDelegate<Tes
         return true;
     }
 
+    @Test
     @Override
     public void testReadAndWrite() throws Exception {
         SparseArrayDelegate<TestEntity> map = SparseFactory.newSparseArray(10);

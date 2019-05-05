@@ -18,7 +18,6 @@ package com.heaven7.java.meshy;
 
 import com.heaven7.java.base.util.SparseArrayDelegate;
 import com.heaven7.java.base.util.SparseFactory;
-import com.heaven7.java.meshy.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

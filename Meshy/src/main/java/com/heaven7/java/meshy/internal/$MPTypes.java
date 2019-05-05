@@ -18,10 +18,7 @@ package com.heaven7.java.meshy.internal;
 
 import com.heaven7.java.base.anno.Hide;
 import com.heaven7.java.base.util.Predicates;
-import com.heaven7.java.meshy.Meshy;
-import com.heaven7.java.meshy.TypeAdapter;
-import com.heaven7.java.meshy.TypeAdapterContext;
-import com.heaven7.java.meshy.TypeNode;
+import com.heaven7.java.meshy.*;
 import com.heaven7.java.meshy.adapter.ArrayTypeAdapter;
 import com.heaven7.java.meshy.adapter.CollectionTypeAdapter;
 import com.heaven7.java.meshy.adapter.MapTypeAdapter;
@@ -171,7 +168,16 @@ public final class $MPTypes {
                 return subType.get(index);
             }
         }
-
+        public int getSubNodeCount(){
+            if(Predicates.isEmpty(subType)){
+                if(!Predicates.isEmpty(varNodes)){
+                    return varNodes.size();
+                }
+                return 0;
+            }else {
+                return subType.size();
+            }
+        }
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -195,13 +201,14 @@ public final class $MPTypes {
                         subNode.getTypeAdapter(meshy, applyVersion));
             }
             TypeAdapterContext context = meshy.getTypeAdapterContext();
+            MessageProtocolContext mpContext = meshy.getMessageProtocolContext();
             if(type != null){
                 TypeAdapter typeAdapter = meshy.getTypeAdapter(this, applyVersion);
                 if(typeAdapter != null){
                     return typeAdapter;
                 }
                 //base types
-                TypeAdapter adapter = meshy.getMessageProtocolContext().getBaseTypeAdapter(type);
+                TypeAdapter adapter = mpContext.getBaseTypeAdapter(type);
                 if(adapter != null){
                     return adapter;
                 }
@@ -209,8 +216,35 @@ public final class $MPTypes {
                     return new CollectionTypeAdapter(context,
                             getSubNode(0).getTypeAdapter(meshy, applyVersion));
                 }else if(Map.class.isAssignableFrom(type) || context.isMap(type)){
-                    return new MapTypeAdapter(context, getSubNode(0).getTypeAdapter(meshy, applyVersion),
-                            getSubNode(1).getTypeAdapter(meshy, applyVersion));
+                    TypeAdapter key, value;
+
+                    int count = getSubNodeCount();
+                    switch (count){
+                        case 0:
+                            key = mpContext.getKeyAdapter(type);
+                            value = mpContext.getValueAdapter(type);
+                            break;
+                        //often key type can be fixed. but value not. like sparse array.
+                        case 1:
+                            key = mpContext.getKeyAdapter(type);
+                            value = getSubNode(0).getTypeAdapter(meshy, applyVersion);
+                            break;
+
+                        case 2:
+                            key = getSubNode(0).getTypeAdapter(meshy, applyVersion);
+                            value = getSubNode(1).getTypeAdapter(meshy, applyVersion);
+                            break;
+
+                        default:
+                            throw new UnsupportedOperationException("sub node count for map must <= 2. but is " + count);
+                    }
+                    if(key == null){
+                        throw new IllegalStateException("can't find target key adapter for map class = " + type.getName());
+                    }
+                    if(value == null){
+                        throw new IllegalStateException("can't find target value adapter for map class = " + type.getName());
+                    }
+                    return new MapTypeAdapter(context, key, value);
                 }else {
                     return new ObjectTypeAdapter(meshy, applyVersion);
                 }

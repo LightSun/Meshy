@@ -64,7 +64,7 @@ public class SimpleMessageProtocolContext implements MessageProtocolContext {
     static class Creator{
        static final SimpleMessageProtocolContext INSTANCE = new SimpleMessageProtocolContext();
     }
-    private SimpleMessageProtocolContext(){}
+    protected SimpleMessageProtocolContext(){}
 
     public static SimpleMessageProtocolContext getDefault(){
         return Creator.INSTANCE;
@@ -282,6 +282,18 @@ public class SimpleMessageProtocolContext implements MessageProtocolContext {
         int acType = BaseMemberProxy.getType(type);
         int extra = BaseMemberProxy.getFlags(type);
         return getTypeAdapter(acType, extra == MemberProxy.FLAG_PACKED);
+    }
+
+    @Override
+    public TypeAdapter getKeyAdapter(Class<?> type) {
+        if(SparseArrayDelegate.class.isAssignableFrom(type)){
+            return getBaseTypeAdapter(int.class);
+        }
+        return null;
+    }
+    @Override
+    public TypeAdapter getValueAdapter(Class<?> type) {
+        return null;
     }
 
 }

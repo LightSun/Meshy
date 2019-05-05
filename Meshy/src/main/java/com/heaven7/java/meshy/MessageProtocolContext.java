@@ -31,4 +31,19 @@ public interface MessageProtocolContext {
      * @return the type adapter of 'Basic' type.
      */
     TypeAdapter getBaseTypeAdapter(Class<?> Clazz);
+
+    /**
+     * get the key adapter for target map class.
+     * @param type the class
+     * @return the type adapter
+     * @since 1.0.1
+     */
+    TypeAdapter getKeyAdapter(Class<?> type);
+    /**
+     * get the value adapter for target map class.
+     * @param type the class
+     * @return the type adapter
+     * @since 1.0.1
+     */
+    TypeAdapter getValueAdapter(Class<?> type);
 }
